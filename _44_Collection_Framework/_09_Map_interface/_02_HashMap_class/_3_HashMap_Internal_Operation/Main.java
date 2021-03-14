@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._2_HashMap_class._3_HashMap_Internal_Operation;
+package _44_Collection_Framework._09_Map_interface._02_HashMap_class._3_HashMap_Internal_Operation;
 
 import java.util.HashMap;
 import java.util.Map;

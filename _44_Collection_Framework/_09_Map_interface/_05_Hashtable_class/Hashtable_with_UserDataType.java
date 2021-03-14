@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._5_Hashtable_class;
+package _44_Collection_Framework._09_Map_interface._05_Hashtable_class;
 
 import java.util.Hashtable;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._2_HashMap_class._2_HashMap_with_UserDataType;
+package _44_Collection_Framework._09_Map_interface._02_HashMap_class._2_HashMap_with_UserDataType;
 
 import java.util.HashMap;
 import java.util.Map;

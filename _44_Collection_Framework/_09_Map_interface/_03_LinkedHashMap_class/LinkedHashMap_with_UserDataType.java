@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._3_LinkedHashMap_class;
+package _44_Collection_Framework._09_Map_interface._03_LinkedHashMap_class;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

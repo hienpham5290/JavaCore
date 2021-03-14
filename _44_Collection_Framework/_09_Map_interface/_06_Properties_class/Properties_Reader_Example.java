@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._6_Properties_class;
+package _44_Collection_Framework._09_Map_interface._06_Properties_class;
 
 import java.io.FileReader;
 import java.util.Properties;

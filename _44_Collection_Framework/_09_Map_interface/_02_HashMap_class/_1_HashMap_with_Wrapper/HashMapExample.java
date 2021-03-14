@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._2_HashMap_class._1_HashMap_with_Wrapper;
+package _44_Collection_Framework._09_Map_interface._02_HashMap_class._1_HashMap_with_Wrapper;
 
 import java.util.Map;
 import java.util.HashMap;

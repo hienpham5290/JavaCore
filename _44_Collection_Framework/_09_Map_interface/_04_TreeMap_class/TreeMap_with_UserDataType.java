@@ -1,4 +1,4 @@
-package _44_Collection_Framework._09_Map_interface._4_TreeMap_class;
+package _44_Collection_Framework._09_Map_interface._04_TreeMap_class;
 
 import java.util.Map;
 import java.util.TreeMap;
