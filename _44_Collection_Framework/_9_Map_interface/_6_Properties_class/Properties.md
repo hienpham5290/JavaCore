@@ -37,7 +37,7 @@ ________________________________________________________________________________
 2. `Hashtable` class `implements` `Map` interface
 <br /> => do đó có thể sử dụng các `method` đã định nghĩa ở `Hashtable` class và `Map` interface.
 <br />
-3. Ngoài ra, `Properties` class còn có các `method` riêng của nó như sau:
+3. Ngoài ra, `Properties` class còn có các `method` riêng của nó như sau :
 
 |Method|Description|
 |-------------|----------|
