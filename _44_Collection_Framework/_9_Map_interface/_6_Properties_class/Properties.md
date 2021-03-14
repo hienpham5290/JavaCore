@@ -142,7 +142,7 @@ dbpassword=password
 dbuser=coderlangthang
 ```
 ___
-### 4.3 Sử dụng `Properties`' object để `getProperty(key)` của `System`
+### 4.3. Sử dụng `Properties`' object để `getProperty(key)` của `System`
 ```java
 import java.util.Iterator;
 import java.util.Map;
