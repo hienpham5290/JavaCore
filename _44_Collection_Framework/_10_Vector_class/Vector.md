@@ -1,7 +1,7 @@
 # Vector class
 ___
 ## 1. Giới thiệu
-+ Những điểm cần ghi nhớ về Vector clas 
++ Những điểm cần ghi nhớ về Vector class
     - có thể chứa các phần tử trùng lặp 
     - duy trì thứ tự các phần tử theo trình tự được thêm vào
     - Vector được `synchronized` (đồng bộ hóa)    
