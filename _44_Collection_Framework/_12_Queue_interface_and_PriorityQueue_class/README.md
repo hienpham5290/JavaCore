@@ -33,7 +33,7 @@ ___
 >>người đến sau có thể chen vào giữa nếu cao to, hoặc đứng cuối nếu lép vế.<br/>
 >>>nếu chen ngay đầu hàng có thể sẽ bị bảo vệ hỏi thăm.
 
-![](https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PiorityQueue_class/Queue_interface.png)<br/>
+![](https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/Queue_interface.png)<br/>
 Hình ảnh miêu tả hoạt động của Queue interface
 
 * có **2 class implements Queue interface**:
