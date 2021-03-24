@@ -54,13 +54,29 @@ ___
 Thao tác|Ném ra ngoại lệ|Trả về giá trị cụ thể
 ----|:----:|:----:
 thêm 1 phần tử vào hàng đợi|add(e)|offer(e)
-truy xuất và loại bỏ 1 phần tử khỏi đầu hàng đợi|remove()|poll()
-chỉ truy xuất nội dung của 1 phần tử ở đầu hàng đợi|element()|peek()
+truy xuất và loại bỏ <br/>1 phần tử khỏi đầu hàng đợi|remove()|poll()
+chỉ truy xuất nội dung <br/>của 1 phần tử ở đầu hàng đợi|element()|peek()
 
-### `boolean add(e)`
+### `boolean add(E)` <a id="4.1"></a>
 
-### `boolean offer(e)`
-### `E remove()`
-### `E poll()`
-### `E element()`
-### `E peek()`
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_add(E).png">
+<br/>boolean add(E) method
+
+* thêm 1 phần tử vào hàng đợi nếu có thể, làm điều này ngay lập tức nếu không bị <br/>giới hạn **bởi** kích thước của hàng đợi.
+* `return true` nếu thành công.
+* `Throw IllegalStateException` khi hàng đợi không còn vị trí trống.
+
+### `boolean offer(E)` <a id="4.2"></a>
+
+![](https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_offer(E).png)<br/>
+boolean offer(E)
+
+* thêm 1 phần tử vào hàng đợi nếu có thể, làm điều này ngay lập tức nếu không bị <br/>giới hạn **bởi** kích thước của hàng đợi.
+* khi hàng đợi bị giới hạn kích thước, phương thức này khá giống phương thức `add(E)`, <br/>tuy nhiên phương thức này không Throw bất kỳ Exception nào, nó chỉ `return false`<br/> khi hàng đợi không còn chỗ trống.
+
+### `E remove()` <a id="4.3"></a>
+
+### `E poll()` <a id="4.4"></a>
+### `E element()` <a id="4.5"></a>
+### `E peek()` <a id="4.6"></a>
+### Nhận Xét <a id="4.7"></a>
