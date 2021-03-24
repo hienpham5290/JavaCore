@@ -33,7 +33,7 @@ ___
 >>người đến sau có thể chen vào giữa nếu cao to, hoặc đứng cuối nếu lép vế.<br/>
 >>>nếu chen ngay đầu hàng có thể sẽ bị bảo vệ hỏi thăm.
 
-![](https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/Queue_interface.png)<br/>
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/Queue_interface.png"> <br/>
 Hình ảnh miêu tả hoạt động của Queue interface
 
 * có **2 class implements Queue interface**:
@@ -68,7 +68,7 @@ chỉ truy xuất nội dung <br/>của 1 phần tử ở đầu hàng đợi|el
 
 ### `boolean offer(E)` <a id="4.2"></a>
 
-![](https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_offer(E).png)<br/>
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_offer(E).png"> <br/>
 boolean offer(E)
 
 * thêm 1 phần tử vào hàng đợi nếu có thể, làm điều này ngay lập tức nếu không bị <br/>giới hạn **bởi** kích thước của hàng đợi.
@@ -76,7 +76,95 @@ boolean offer(E)
 
 ### `E remove()` <a id="4.3"></a>
 
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_E%20remove().png"> <br/>
+E remove() method
+
+* **truy xuất** đồng thời **loại bỏ** luôn phần tử đầu tiên của hàng đợi, `return` phần tử đầu<br/> tiên có kiểu E.
+* nếu không có phần tử nào trong hàng đợi, Exception sẽ bị ném ra.
+
 ### `E poll()` <a id="4.4"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_E%20poll().png"> <br/>E poll() method
+
+* **truy xuất** đồng thời **loại bỏ** luôn phần tử đầu tiên của hàng đợi, `return` phần tử đầu<br/> tiên có kiểu E.
+* nếu không có phần tử nào trong hàng đợi thì `return null`
+
 ### `E element()` <a id="4.5"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_E%20element().png"> <br/>E element() method
+
+* **chỉ truy xuất** phần tử đầu tiên của hàng đợi **nhưng không loại bỏ** phần tử đó.
+* `Throw Exception` nếu hàng đợi không tồn tại bất kỳ phần tử nào.
+
 ### `E peek()` <a id="4.6"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_12_Queue_interface_and_PriorityQueue_class/methodOfQueue_E%20peek().png"> <br/>E peek() method
+
+* **chỉ truy xuất** phần tử đầu tiên của hàng đợi **nhưng không loại bỏ** phần tử đó.
+* `return null` nếu hàng đợi không tồn tại bất kỳ phần tử nào.
+
 ### Nhận Xét <a id="4.7"></a>
+* các method trên, không có method nào có thể dùng để truy xuất bất kỳ phần tử<br/> nào khác **ngoại trừ phần tử đầu tiên**.
+* và không có method nào có thể dùng để chỉ định vị trí chèn phần tử vào hàng đợi.
+___
+## 5. Ví dụ minh họa <a id="5"></a>
+
+### Ví dụ sử dụng Queue với LinkedList <a id="5.1"></a>
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Queue_with_LinkedList {
+    public static void main(String[] args) {
+        // khởi tạo 1 queue với instance của LinkedList (dùng LinkedList làm queue)
+        Queue<String> stringQueue = new LinkedList<>();
+
+        // offer(E) method để thêm phần tử
+        // với LinkedList làm hàng đợi queue, phần tử sẽ được thêm vào cuối (tail)
+        // return true : nếu thành công
+        // return false : nếu hàng đợi không còn chỗ
+        stringQueue.offer("A");
+        stringQueue.offer("B");
+        stringQueue.offer("C");
+
+        // add(E) method để thêm phần tử
+        // với LinkedList làm hàng đợi queue, phần tử sẽ được thêm vào cuối (tail)
+        // return true : nếu thành công
+        // Throw IllegalStateException nếu hàng đợi không còn chỗ
+        stringQueue.add("D");
+        stringQueue.add("E");
+
+        while (true) {
+            // E remove() hoặc E poll() method để lấy ra phần tử đầu tiên, đồng thời
+            // xóa bỏ phần tử đó
+            // E remove() ném ra ngoại lệ nếu hàng đợi rỗng
+            // E poll()  return null nếu hàng đợi rỗng
+            String stringQ = stringQueue.poll();
+            if (stringQ == null) {
+                break;
+            }
+            System.out.println("name= " + stringQ);
+        }
+        System.out.println();
+        
+        // kiểm tra hàng đợi LinkedList đã bị poll hết phần tử chưa
+        System.out.println("Is queue empty? : " + stringQueue.isEmpty());
+    }
+}
+```
+OUTPUT:
+```
+name= A
+name= B
+name= C
+name= D
+name= E
+
+Is queue empty? : true
+```
+
+### Ví dụ sử dụng hàng đợi có ưu tiên PriorityQueue với kiểu dữ liệu cơ bản (Wrapper) <a id="5.2"></a>
+
+### Ví dụ sử dụng hàng đợi có ưu tiên PriorityQueue với kiểu do người dùng tự định nghĩa (Object) <a id="5.3"></a>
+
+
