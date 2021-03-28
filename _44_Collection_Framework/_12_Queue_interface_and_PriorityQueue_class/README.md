@@ -164,7 +164,141 @@ Is queue empty? : true
 ```
 
 ### Ví dụ sử dụng hàng đợi có ưu tiên PriorityQueue với kiểu dữ liệu cơ bản (Wrapper) <a id="5.2"></a>
+```java
+import java.util.PriorityQueue;
+import java.util.Queue;
 
+public class Queue_with_PriorityQueue_by_Wrapper {
+    public static void main(String[] args) {
+        // với hàng đợi (queue) với instance của PriorityQueue, các phần
+        // tử kiểu Wrapper sẽ được sắp xếp theo trật tự tự nhiên của chúng
+        // không phụ thuộc vào trình tự được thêm vào, mà phụ thuộc vào tính
+        // chất của mỗi kiểu Wrapper
+        Queue<String> namelist = new PriorityQueue<>();
+
+        // offer(E) : thêm phần tử vào hàng đợi (queue)
+        // return true : nếu thành công
+        // return false : nếu hàng đợi không còn vị trí trống
+        namelist.offer("E");
+        namelist.offer("D");
+        namelist.offer("C");
+
+        // add(E) : thêm phần tử vào hàng đợi
+        // return true : nếu thành công
+        // Throw Exception : nếu hàng đợi không còn vị trí trống
+        namelist.add("B");
+        namelist.add("A");
+
+        while (true) {
+            // E poll() : truy xuất nội dung, đồng thời loại bỏ phần tử đầu tiên của queue
+            // return phần tử kiểu E nếu thành công
+            // return null : nếu không tìm thấy phần tử nào trong queue
+            String name = namelist.poll();
+            if (name == null) {
+                break;
+            }
+            System.out.println("Name= " + name);
+        }
+    }
+}
+```
+OUTPUT:
+```
+Name= A
+Name= B
+Name= C
+Name= D
+Name= E
+```
+>Ở trên, thứ tự được thêm vào lần lượt là: E D C B A<br/>
+>Tuy nhiên, kiểu String đã implements Comparable\<String> của nó,<br/>
+>nên thứ tự sắp xếp trong hàng đợi đã thay đổi theo trật tự tự nhiên của kiểu String,<br/>
+>nên Output: A B C D E
 ### Ví dụ sử dụng hàng đợi có ưu tiên PriorityQueue với kiểu do người dùng tự định nghĩa (Object) <a id="5.3"></a>
+* Để sử dụng hàng đợi PriorityQueue cho kiểu người dùng tự định nghĩa, thì class của đối tượng<br/>
+cần đưa vào hàng đợi phải implement Comparable hoặc cài đặt bộ so sánh cài đặt Comparator.
+
+```java
+// cài đặt class implements Comparable, làm tiêu chí so sánh sắp xếp phần
+// tử cho hàng đợi ProrityQueue
+
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+class Book implements Comparable<Book> {
+    private int id;
+    private String
+            name, author, publisher;
+    private int quantity;
+
+    public Book(int id, String name, String author, String publisher, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.publisher = publisher;
+        this.quantity = quantity;
+    }
+
+    public String toString() {
+        return "Book [id=" + id + ", name=" + name + ", author=" + author + 
+                ", publisher=" + publisher + ", quantity=" + quantity +"]";
+    }
+    @Override
+    public int compareTo(Book o) {
+        if (id < o.id) {
+            return -1;
+        } else if (id == o.id) {
+            return 0;
+        } else return 1;
+    }
+}
+public class Queue_with_PriorityQueue_by_UserDataType {
+    public static void main(String[] args) {
+        // khởi tạo PriorityQueue
+        Queue<Book> bookQueue = new PriorityQueue<>();
+
+        // tạo các đối tượng Book
+        Book b1 = new Book(333, "Let us C", "Yashwant Kanetkar", 
+                "BPB", 8);
+        Book b2 = new Book(222, "Operating System", "Galvin", 
+                "Wiley", 6);
+        Book b3 = new Book(111, "Data Communications & Networking", 
+                "Forouzan", "Mc Graw Hill", 4);
+
+        // thêm đối tượng Book vào hàng đợi
+        bookQueue.add(b1);
+        bookQueue.add(b2);
+        bookQueue.add(b3);
+
+        // duyệt qua hàng đợi (queue) bằng for-each
+        System.out.println("Use for-each to retrieve queue");
+        for (Book b : bookQueue) {
+            System.out.println(b);
+        }
+        System.out.println("queue - empty: " + bookQueue.isEmpty());
+        System.out.println("Use E poll() method to get & remove first element in queue");
+        System.out.println(bookQueue.poll());
+        System.out.println(bookQueue.poll());
+        System.out.println(bookQueue.poll());
+        System.out.println("queue - empty: " + bookQueue.isEmpty());
+    }
+}
+```
+OUTPUT:
+```
+Use for-each to retrieve queue
+Book [id=111, name=Data Communications & Networking, author=Forouzan, publisher=Mc Graw Hill, quantity=4]
+Book [id=333, name=Let us C, author=Yashwant Kanetkar, publisher=BPB, quantity=8]
+Book [id=222, name=Operating System, author=Galvin, publisher=Wiley, quantity=6]
+queue - empty: false
+Use E poll() method to get & remove first element in queue
+Book [id=111, name=Data Communications & Networking, author=Forouzan, publisher=Mc Graw Hill, quantity=4]
+Book [id=222, name=Operating System, author=Galvin, publisher=Wiley, quantity=6]
+Book [id=333, name=Let us C, author=Yashwant Kanetkar, publisher=BPB, quantity=8]
+queue - empty: true
+```
+>theo trình tự thêm vào hàng đợi, id của phần tử lần lượt là: 333, 222, 111.<br/>
+>nhưng class Book có implements interface Comparable, cài đặt tiêu chí so sánh theo id,<br/.>
+>nên các phần tử khi thêm vào queue được sắp xếp lại theo id, nhỏ trước, lớn sau.
 
 
