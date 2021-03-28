@@ -300,5 +300,5 @@ queue - empty: true
 >theo trình tự thêm vào hàng đợi, id của phần tử lần lượt là: 333, 222, 111.<br/>
 >nhưng class Book có implements interface Comparable, cài đặt tiêu chí so sánh theo id,<br/.>
 >nên các phần tử khi thêm vào queue được sắp xếp lại theo id, nhỏ trước, lớn sau.
-
-
+___
+THE END
