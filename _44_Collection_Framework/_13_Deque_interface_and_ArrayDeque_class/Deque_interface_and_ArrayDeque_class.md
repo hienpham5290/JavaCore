@@ -172,10 +172,119 @@ ___
       
     * các phần tử **null** không được phép trong **ArrayDeque**.
 ### 2.2. Phân cấp ArrayDeque <a id="2.1"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_13_Deque_interface_and_ArrayDeque_class/hierarchy_of_ArrayDeque_class.png"> <br/>
+Phân cấp của ArrayDeque trong Collection Framework
+
+* lớp ArrayDeque được định nghĩa trong package `java.util.` như sau:
+```java
+public class ArrayDeque<E> extends AbstractCollection<E>
+                           implements Deque<E>, Cloneable, Serializable {
+ 
+}
+```
 ___
+
 ## 3. Ví dụ minh họa sử dụng ArrayDeque <a id="3"></a>
 ### 3.1. Ví dụ sử dụng ArrayDeque như Collection <a id="3.1"></a>
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class ArrayDequeAsCollection {
+    public static void main(String[] args) {
+        // khởi tạo 1 Deque với instance của ArrayDeque
+        Deque<String> deque = new ArrayDeque<>();
+        
+        // add element vào Deque
+        deque.add("BASIC");
+        deque.add("OOP");
+        deque.add("Collection");
+
+        // sử dụng for-each truy xuất từng phần tử trong Deque
+        for (String e : deque) {
+            System.out.println(e);
+        }
+    }
+}
+```
+OUTPUT:
+```
+BASIC
+OOP
+Collection
+```
+
 ### 3.2. Ví dụ sử dụng ArrayDeque như Queue <a id="3.2"></a>
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class ArrayDequeAsQueue {
+    public static void main(String[] args) {
+        // khởi tạo 1 ArrayDeque
+        Deque<String> arrayDeque = new ArrayDeque<>();
+
+        // thêm element vào ArrayDeque với phương thức như
+        // tương ứng với các phương thức của Queue
+        // thêm element vào cuối
+        arrayDeque.offer("One");
+        arrayDeque.offer("Two");
+        arrayDeque.offer("Three");
+        arrayDeque.offer("Four");
+        arrayDeque.offer("Five");
+
+        // in ra các phần tử của ArrayDeque như 1 array
+        System.out.println(arrayDeque);
+
+        // truy xuất và xóa bỏ phần tử đầu như 1 Queue
+        System.out.println(arrayDeque.poll());
+        System.out.println(arrayDeque.poll());
+    }
+}
+```
+OUTPUT:
+```
+[One, Two, Three, Four, Five]
+One
+Two
+```
+>ví dụ trên, poll() đã được gọi 2 lần, mỗi lần gọi là xóa luôn phần tử đầu của<br/>
+> ArrayDeque
+
 ### 3.3. Ví dụ sử dụng ArrayDeque như Stack <a id="3.3"></a>
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class ArrayDequeAsStack {
+    public static void main(String[] args) {
+        // khởi tạo ArrayDeque
+        Deque<String> arrayDeque = new ArrayDeque<>();
+
+        // đẩy phần tử vào ArrayDeque
+        arrayDeque.push("One");
+        arrayDeque.push("Two");
+        arrayDeque.push("Three");
+        arrayDeque.push("Four");
+        arrayDeque.push("Five");
+
+        // in ra mảng ArrayDeque
+        System.out.println(arrayDeque);
+
+        // truy xuất và loại bỏ phần tử thêm vào sau cùng
+        System.out.println(arrayDeque.pop());
+        System.out.println(arrayDeque.pop());
+    }
+}
+```
+OUTPUT:
+```
+[Five, Four, Three, Two, One]
+Five
+Four
+```
+>ví dụ trên: Five được thêm vào sau cùng, và khi truy xuất nó được truy xuất 
+> đầu tiên
 ___
 THE END
