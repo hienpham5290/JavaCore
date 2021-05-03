@@ -11,6 +11,8 @@ trong Java.
 * đôi khi yêu cầu bài toán đặt ra, là phải làm sao chuyển đổi **HashMap** sang<br/>
 **ArrayList**.
   
+<img src="https://github.com/hienqp/JavaCore/blob/main/_44_Collection_Framework/_17_HashMap_to_ArrayList/HashMap_to_ArrayList.png">
+  
 # Nội Dung
 1. [Phương Pháp Chuyển Đổi HashMap sang ArrayList](#1)
 
