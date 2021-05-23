@@ -1,4 +1,4 @@
-#Loại Bỏ Phần Tử Trùng Lặp<br/>Trong Java 8
+# Loại Bỏ Phần Tử Trùng Lặp<br/>Trong Java 8
 * ngoài cách loại bỏ các phần tử trùng lặp trong ArrayList từ Java 7 trở<br/>
 xuống.
   
