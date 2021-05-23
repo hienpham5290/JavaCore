@@ -22,6 +22,8 @@ JPA, EJB và JMS.
     * nó chủ yếu được sử dụng để truyền trạng thái của đối tượng qua<br/>
     mạng (được biết đến như là marshaling).
 
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_01_Serialization_Deserialization/Serialization_Deserialization.png">
+
 * **Serializable _interface_**
     * được cài đặt trong package **java.io.Serializable**
     * **Serializable** _interface_ là 1 Marker _interface_ (là _interface_ không chứa<br/>
