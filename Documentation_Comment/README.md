@@ -20,8 +20,6 @@
     4.6. [{@value}](#4.6)
    
     4.7. [Tham khảo 1 số định dạng khác](#4.7)
-   
-5. [Kết luận](#5)
 
 ## 1. Các loại Comment trong Java <a id="1"></a>
 * Comment 1 dòng:
@@ -83,19 +81,39 @@ thêm **Doc Comment** trước đó, khi trỏ chuột vào **class** hay **meth
 * @version: dùng để hiển thị version của document.
 * @since: dùng hiển thị ngày hoặc version tạo ra document.
 ![author_version_since.png](author_version_since.png)
-### 4.2. {@code}, @param <a id="4.2"></a>
-* {@code}: giúp hiển thị code bên trong HTML. Các code này được hiển <br/>
-  thị với font chữ khác các font chữ còn lại, và bạn cũng không cần lo<br/>
-  lắng nếu có các dòng code xung đột với các tag của HTML khi này.
-* @param: theo sau tag này sẽ là tên tham số của hàm, theo sau nữa sẽ là lời giải thích cho tham số đó.
-### 4.3. @deprecated, {@link} <a id="4.3"></a>
-
+### 4.2. {@code }, @param <a id="4.2"></a>
+* {@code }: giúp hiển thị code bên trong HTML. sau code là thành phần<br/>
+  cần hiển thị ở dạng code<br/>
+  Các code này được hiển thị với font chữ khác các font chữ còn lại, và <br/>
+  bạn cũng không cần lo lắng nếu có các dòng code xung đột với các tag <br/>
+  của HTML khi này.
+* @param: theo sau tag này sẽ là tên tham số của hàm, theo sau nữa <br/>
+  sẽ là lời giải thích cho tham số đó.
+![code_param.png](code_param.png)
+### 4.3. @deprecated, {@link #} <a id="4.3"></a>
+* @deprecated: giúp đánh dấu rằng thành phần này sẽ bị gỡ bỏ khỏi API <br/>
+  trong nay mai.
+* {@link #}: link dẫn đến một thành phần khác trong source code <br/>
+  là method(kiểu_dữ_liệu) sau dấu \#.
+  
+![deprecated_link.png](deprecated_link.png)
 ### 4.4. @exception, @throws <a id="4.4"></a>
+* Hai **Tag** này có công dụng như nhau. Giúp thêm một thông tin **Throws** <br/>
+  trong document báo hiệu phương thức này sẽ tung ra một exception.
+  
+* @throws tên_exception nguyên_nhân_exception
+* @exception tên_exception nguyên_nhân_exception
 
+![throws_exception.png](throws_exception.png)
 ### 4.5. @return, @see <a id="4.5"></a>
-
-### 4.6. {@value} <a id="4.6"></a>
-
+* @return: giải thích cho giá trị return của method.
+* @see: đưa ra các tham khảo đến các class khác.
+![return_see.png](return_see.png)
+### 4.6. {@value #TÊN_BIẾN_static} <a id="4.6"></a>
+* Giúp hiển thị giá trị của các static field.
+* {@value #TÊN_BIẾN_static}
+![value.png](value.png)
 ### 4.7. Tham khảo 1 số định dạng khác <a id="4.7"></a>
-
-## 5. Kết luận <a id="5"></a>
+* tham khảo thêm cách sử dụng Doc Java từ API của Java (trong String <br/>
+  class, Integer class, ...)
+* google thêm.
