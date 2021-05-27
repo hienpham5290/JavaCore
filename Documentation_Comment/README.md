@@ -58,13 +58,36 @@ thêm **Doc Comment** trước đó, khi trỏ chuột vào **class** hay **meth
 > Để **Javadoc** có thể build ra 1 **document** hoàn chỉnh cần tuân thủ 1 số<br/>
 > quy tắc.
 ## 3. Tạo HTML Document trên IntellJ <a id="3"></a>
-* trong IntelliJ -> Tools -> Generate Javadoc
+* trong IntelliJ 
+    * chọn Tools 
+      
+    * chọn Generate Javadoc
+![generateJavadoc.png](generateJavadoc.png)    
+    * 1 cửa sổ tùy chỉnh Generate Javadoc xuất hiện, trong đó có các<br/>
+    thành phần sau cần chú ý
+        * Generate JavaDoc Scope : phạm vi tạo ra JavaDoc
+            * Whole project : tất cả Doc Java có trong project
+            * Uncommitted files : các file không được commit
+            * File 'path': đường dẫn của file đang mở hiện tại
+            * Custom Scope: phạm vi tùy chỉnh
+        * Include JDK and library sources in -sourcepath: (để trống)
+        * Link to JDK documentation (use -link option): (để trống)
+        * Output directory: chỉ định thư mục chứa file HTML
+        * Open generated documentation in browser: (tick chọn)
+    * còn lại để mặc định, sau khi chọn **OK** browser sẽ mở Doc Java lên.
+![htmlFileFromJavaDoc.png](htmlFileFromJavaDoc.png)
 ## 4. Định dạng Java Doc thông qua sử dụng Tag <a id="4"></a>
 
 ### 4.1. @author, @version, @since <a id="4.1"></a>
-
+* @author: dùng để hiển thị thông tin tác giả.
+* @version: dùng để hiển thị version của document.
+* @since: dùng hiển thị ngày hoặc version tạo ra document.
+![author_version_since.png](author_version_since.png)
 ### 4.2. {@code}, @param <a id="4.2"></a>
-
+* {@code}: giúp hiển thị code bên trong HTML. Các code này được hiển <br/>
+  thị với font chữ khác các font chữ còn lại, và bạn cũng không cần lo<br/>
+  lắng nếu có các dòng code xung đột với các tag của HTML khi này.
+* @param: theo sau tag này sẽ là tên tham số của hàm, theo sau nữa sẽ là lời giải thích cho tham số đó.
 ### 4.3. @deprecated, {@link} <a id="4.3"></a>
 
 ### 4.4. @exception, @throws <a id="4.4"></a>
