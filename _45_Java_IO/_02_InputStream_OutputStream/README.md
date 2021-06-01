@@ -240,9 +240,13 @@ ___
   người dùng tạo ra, và thường là màn hình máy tính được sử dụng<br/>
     cho **Standard Error Stream**  và được thể hiện dưới dạng <br/>
     **System.err**
-    
+___    
 ## 5. UTF-8 encoding & UTF-16 encoding <a id="5"></a>
+___
 ### 5.1 UTF-8 encoding <a id="5.1"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_02_InputStream_OutputStream/UTF-8_encoding.png">
+
 * với mã hóa (encoding) **UTF-8** để lưu 1 ký tự vào bộ nhớ.
 * **UTF-8** là 1 bảng mã mở rộng so với bảng mã **ASCII**.
 * trong **UTF-8** gồm 2 phần:
@@ -255,7 +259,11 @@ ___
   đó có thuộc ký tự nào trong bảng mã **UTF-8** hay không.
   * nếu byte thứ 2 và thứ 1 không tạo thành 1 ký tự, đọc tiếp byte thứ<br/>
   3 và chắc chắn sẽ ghép thành 1 ký tự trong bảng mã **UTF-8**
+___    
 ### 5.2 UTF-16 encoding <a id="5.2"></a>
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_02_InputStream_OutputStream/UTF-16_encoding.png">
+
 * với mã hóa (encoding) **UTF-16** để lưu trữ ký tự vào bộ nhớ.
 * cách thức lưu trữ của **UTF-16** là sử dụng 2 bytes liên tiếp nhau, để tạo<br/>
 thành 1 ký tự tương ứng trong bảng mã **UTF-16**.
