@@ -144,8 +144,8 @@ ___
     * ```java
         public int read(byte[] b) throws IOException
         // method read(byte[] b) đọc các bytes từ InputStream
-        // gán vào các phần tử của mảng và trả về số lượng 
-        // bytes đọc được từ InputStream
+        // gán từng byte vào các phần tử của mảng và 
+        // trả về số lượng bytes đọc được từ InputStream
         // trả về -1 nếu tiến tới cuối stream
       ```
     * ```java
@@ -155,6 +155,32 @@ ___
         // và trả về số lượng bytes vừa đọc được
         // return -1 nếu tiến tới cuối stream
       ```
+      
+    * ```java
+      public byte[] readAllBytes() throws IOException
+      // đọc các bytes 1 lần từ input stream và trả về 1 mảng byte[]
+      // method này không thể tự close() input stream, khi đến cuối
+      // stream, lệnh gọi thêm của method này có thể trả về 1 mảng
+      // byte[] trống
+      // method này thường sử dụng cho những trường hợp đơn giản, với
+      // input stream có lượng dữ liệu nhỏ
+      ```
+    * ```java
+      public byte[] readNBytes(int len) throws IOException 
+      // đọc tối đa số lượng len byte từ input stream
+      // return 1 mảng byte[] đọc được
+      // nếu return mảng empty nghĩa là đã tiến tới cuối stream
+      ```      
+      
+    * ```java
+      public int readNBytes(byte[] b, int offset, int len) throws IOException
+      // đọc tối đa số lượng len byte từ input stream
+      // gán các byte đọc được vào các phần tử của mảng byte[] chỉ định
+      // từ vị trí offset đến vị trí offset+len
+      // return số lượng byte đọc được
+      // return -1 nếu tiến tới cuối stream
+      ```
+      
     * ```java
         public void close() throws IOException
         // đóng stream này và giải phóng mọi tài nguyên hệ thống
