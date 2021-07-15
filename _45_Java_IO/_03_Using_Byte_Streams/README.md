@@ -1049,7 +1049,7 @@ public class WriteCollectionFramework {
 }
 ```
 
-<img src="">
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/collectionIO.png">
 
 ```
 OUTPUT
@@ -1204,6 +1204,9 @@ public class WriteFieldToStream {
     }
 }
 ```
+
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/gamesetting.png">
+
 ```
 OUTPUT
 
@@ -1294,6 +1297,7 @@ public class WriteUnsharedToStream {
     }
 }
 ```
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/comparewriteObjectwriteUnshared.png">
 _________________________________________________________________________________________________________
 
 ###   4.2. Ví dụ Sử dụng ObjectInputStream  read() object từ <br/>file<a id="4.2"></a>
@@ -1741,6 +1745,8 @@ public class ReadEmployeeData {
 }
 ```
 
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/oos.png">
+
 ```
 OUTPUT
 
@@ -1912,7 +1918,7 @@ public class ReadFieldFromStream {
 }
 ```
 
-<img src="">
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/ReadGameSetting.png">
 
 ```
 OUTPUT
@@ -2035,7 +2041,7 @@ public class DataOutputStream_EX {
 }
 ```
 
-<img src="">
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/DataOutputStream.png">
 
 
 ___________________________________________________________________________________________________________
@@ -2124,7 +2130,7 @@ public class FilterOutputStream_EX {
 }
 ```
 
-<img src="">
+<img src="https://github.com/hienqp/JavaCore/blob/main/_45_Java_IO/_03_Using_Byte_Streams/_04_Object_IO_Stream/FilterOutputStream.png">
 
 _________________________________________________________________________________________________________________
 ###   6.2. Ví dụ read() file sử dụng FilterInputStream<a id="6.2"></a>
