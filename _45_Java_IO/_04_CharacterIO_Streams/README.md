@@ -1231,9 +1231,196 @@ P	80
 
 __________________________________________________________________________________________________________________________________________________________________________________
 
+## 5. FileWriter <a id="5"></a>
+* **FileWriter** là 1 **subclass** của **OutputStreamWriter**, nó được sử dụng để ghi các file văn bản
+* **FileWriter** khôn có thêm các phương thức nào cho chính nó, nó hoàn toàn sử dụng các phương thức của **superclass** là **OutputStreamWriter**
+* thực tế bạn có thể sử dụng **OutputStreamWriter** để ghi các ký tự vào bất kỳ mục tiêu nào, tuy nhiên **FileWriter** được thiết kế riêng để ghi các ký tự vào file hệ thống
+
+### FileWriter Constructors
+```java
+public class FileWriter extends OutputStreamWriter {
+  public FileWriter(String fileName) throws IOException {//...}
+  public FileWriter(String fileName, boolean append) throws IOException {//...}
+  public FileWriter(File file) throws IOException {//...}
+  public FileWriter(File file, boolean append) throws IOException {//...}
+  public FileWriter(FileDescriptor fd) {//...}
+  public FileWriter(String fileName, Charset charset) throws IOException {//...}
+  public FileWriter(String fileName, Charset charset, boolean append) throws IOException {//...}
+  public FileWriter(File file, Charset charset) throws IOException {//...}
+  public FileWriter(File file, Charset charset, boolean append) throws IOException {//...}
+}
+```
+* các Constructors có tham số **Charset** được thêm vào **FileWriter** từ phiên bản **JDK 11**, vì vậy nếu bạn đang sử dụng phiên bản cũ hơn, và muốn ghi 1 file với mã hóa (encoding) được chỉ định, hãy sử dụng **OutputStreamWriter**
+
+Method                                                        |Description
+:-------------------------------------------------------------|:-----------------------------------------------------------
+FileWriter(String fileName)                                   |tạo 1 **FileWriter** để ghi nội dung vào 1 **fileName** chỉ định (là đường dẫn đến tên file trong hệ thống), sử dụng **charset** mặc định của platform <br/> ``fileName`` : chuỗi đường dẫn đến file nằm trong hệ thống
+FileWriter(String fileName, boolean append)                   |tạo 1 **FileWriter** để ghi đè hoặc nối thêm nội dung vào 1 **fileName** chỉ định (là đường dẫn đến tên file trong hệ thống) bằng cách truyền tham số **boolean**, <br/>**FileWriter** này sử dụng **charset** mặc định của platform <br/> ``fileName`` : chuỗi đường dẫn đến file nằm trong hệ thống <br/>``append`` : giá trị **boolean** cho biết nối thêm hay ghi đè nội dung vào file, nếu ``true`` các bytes sẽ được ghi nối thêm vào cuối file thay vì ghi đè từ đầu file
+FileWriter(File file)                                         |tạo 1 **FileWriter** để ghi nội dung vào 1 **File** chỉ định, sử dụng **charset** mặc định của platform <br/>``file`` : là tham số, file chỉ định để ghi nội dung
+FileWriter(File file, boolean append)                         |tạo 1 **FileWriter** để ghi đè hoặc nối thêm nội dung vào 1 **File** chỉ định bằng cách truyền tham số **boolean**, **FileWriter** này sử dụng **charset** mặc định của platform <br/>``file`` : tham số 1, file chỉ định để ghi nội dung <br/>``append`` : giá trị **boolean** cho biết nối thêm hay ghi đè nội dung vào file, nếu ``true`` các bytes sẽ được ghi nối thêm vào cuối file thay vì ghi đè từ đầu file
+FileWriter(FileDescriptor fd)                                 |tạo 1 **FileWriter** để ghi nội dung vào 1 **FileDescriptor**, sử dụng **charset** mặc định của platfom <br/> ``fd`` : là tham số, **FileDescriptor** chỉ định để ghi nội dung
+FileWriter(String fileName, Charset charset)                  |tạo 1 **FileWriter** để ghi nội dung vào file nằm ở đường dẫn chỉ định trong hệ thống, sử dụng **Charset** chỉ định để ghi <br/> ``fileName`` : đường dẫn đến file chỉ định <br/>``charset`` : Charset chỉ định
+FileWriter(String fileName, Charset charset, boolean append)  |tạo 1 **FileWriter** để ghi đè hoặc nối thêm nội dung vào 1 file nằm ở đường dẫn chỉ định trong hệ thống,  <br/>bằng cách truyền 1 tham số **boolean** cho biết có hay không việc nối thêm nội dung vào file <br/>``fileName`` : đường dẫn của file chỉ định <br/>``charset`` : Charset chỉ định <br/>``append`` : giá trị **boolean** cho biết nối thêm nội dung vào cuối file hay ghi đè từ đầu 
+public FileWriter(File file, Charset charset)                 |tạo 1 **FileWriter** để ghi nội dung vào 1 file chỉ định, sử dụng **Charset** chỉ định để ghi nội dung vào file <br/>``file`` : File chỉ định <br/>``charset`` : Charset chỉ định
+FileWriter(File file, Charset charset, boolean append)        |tạo 1 **FileWriter** để ghi đè hoặc nối thêm nội dung vào file chỉ định, bằn cách truyền 1 tham số **boolean** cho biết có hay không việc nối thêm nội dung vào file <br/>``file`` : File chỉ định <br/>``charset`` : Charset chỉ định <br/>``append`` : giá trị **boolean** cho biết nối thêm nội dung vào cuối file hay ghi đè từ đầu
+
 __________________________________________________________________________________________________________________________________________________________________________________
 
-## 5. FileWriter <a id="5"></a>
+### FileWriter EX1
+* sử dụng **FileWriter** để ghi nội dung vào 1 file chỉ định
+```java
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileWriter_write {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_05_FileWriter\\FileWriter_write.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        FileWriter fileWriter = new FileWriter(file);
+
+        fileWriter.write(file.getAbsolutePath());
+        fileWriter.write("\n");
+        fileWriter.write(fileWriter.getEncoding());
+        fileWriter.write("\n");
+
+        fileWriter.write("Line 1");
+        fileWriter.write("\n");
+
+        fileWriter.write("Line 2");
+        fileWriter.write("\n");
+
+        fileWriter.write("Line 3");
+        fileWriter.write("\n");
+
+        fileWriter.write("Line 4");
+        fileWriter.write("\n");
+
+        fileWriter.close();
+    }
+}
+```
+* OUTPUT
+
+![img_23.png](img_23.png)
+
+__________________________________________________________________________________________________________________________________________________________________________________
+
+### FileWriter EX2
+* sử dụng **FileWriter** để ghi nối thêm nội dung vào file chỉ định
+```java
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileWriter_write_append {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_05_FileWriter\\FileWriter_write - Copy.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        FileWriter fileWriter = new FileWriter(file, true);
+
+        System.out.println(file.getAbsoluteFile());
+        System.out.println(fileWriter.getEncoding());
+
+        fileWriter.write("\n");
+        fileWriter.write("Line 5");
+        fileWriter.write("\n");
+        fileWriter.append("Line 6").append("\n").append("Line 7").append("\n");
+
+        fileWriter.close();
+    }
+}
+```
+* OUTPUT
+
+```
+D:\Learning\Java\JavaOOP\src\_45_Java_IO\_04_CharacterIO_Streams\_05_FileWriter\FileWriter_write - Copy.txt
+UTF8
+```
+
+![img_24.png](img_24.png)
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### FileWriter ghi với UTF16, đọc bằng FileInputStream
+* sử dụng **FileWriter** để ghi 1 file với mã hóa (encoding) với **UTF-16**
+* sau đó đọc file vừa ghi bằng **FileInputStream** để xem các **bytes** trên file
+```java
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public class FileWriter_UTF16 {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_05_FileWriter\\FileWriter_UTF16.txt";
+
+    public static void main(String[] args) throws IOException {
+        System.out.println("WriterFile in UTF-16");
+        write_UTF16_FileWriter();
+
+        System.out.println("read file as BinaryStream");
+        readAs_BinaryStream();
+    }
+
+    private static void write_UTF16_FileWriter() throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        Writer writer = new FileWriter(file, StandardCharsets.UTF_16);
+
+        String s = "JP日本-八洲";
+
+        writer.write(s);
+
+        writer.close();
+    }
+
+    private static void readAs_BinaryStream() throws IOException {
+        File file = new File(path);
+        InputStream fis = new FileInputStream(file  );
+
+        int byteCode;
+        while ((byteCode = fis.read()) != -1) {
+            System.out.println((char) byteCode + "\t" + byteCode);
+        }
+
+        fis.close();
+    }
+}
+```
+* OUTPUT
+
+![img_25.png](img_25.png)
+
+```
+WriterFile in UTF-16
+read file as BinaryStream
+þ	254
+ÿ	255
+ 	0
+J	74
+ 	0
+P	80
+e	101
+å	229
+g	103
+,	44
+ 	0
+-	45
+Q	81
+k	107
+m	109
+2	50
+```
+
+* Dưới đây là hình minh hoạ các **bytes** trên **FileWriter** và các **bytes** trong file vừa được ghi ra bởi **FileWriter**:
+
+![img_26.png](img_26.png)
+
+* Hai bytes đầu tiên **(254,255)** trong file **UTF-16** được sử dụng để đánh dấu rằng nó bắt đầu một dữ liệu mã hoá bằng **UTF-16**
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 6. FileReader <a id="6"></a>

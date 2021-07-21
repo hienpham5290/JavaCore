@@ -1,0 +1,10 @@
+D:\Learning\Java\JavaOOP\src\_45_Java_IO\_04_CharacterIO_Streams\_05_FileWriter\FileWriter_write.txt
+UTF8
+Line 1
+Line 2
+Line 3
+Line 4
+
+Line 5
+Line 6
+Line 7
