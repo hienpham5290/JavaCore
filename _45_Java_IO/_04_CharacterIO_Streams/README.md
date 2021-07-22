@@ -1424,6 +1424,352 @@ m	109
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 6. FileReader <a id="6"></a>
+* **FileReader** là 1 **subclass** của **InputStreamReader**, nó được sử dụng để đọc các file văn bản
+* **FileReader** không có thêm bất cứ method nào khác ngoài trừ các method của **InputStreamReader**
+* thực tế bạn có thể sử dụng **InputStreamReader** để đọc các ký tự từ bất kỳ nguồn nào, tuy nhiên **FileReader** được thiết kế riêng để đọc các file từ hệ thống
+```java
+public class FileReader extends InputStreamReader {
+  public FileReader(String fileName) throws FileNotFoundException {//...}
+  public FileReader(File file) throws FileNotFoundException {//...}
+  public FileReader(FileDescriptor fd) {//...}
+  public FileReader(String fileName, Charset charset) throws IOException {//...}
+  public FileReader(File file, Charset charset) throws IOException {//...}
+}
+```
+* các Constructor có tham số **Charset** được thêm vào **FileReader** từ phiên bản **JDK 11**, vì vậy nếu sử dụng **Java** phiên bản cũ hơn, nhưng muốn đọc file với mã hóa (encoding) chỉ định hãy sử dụng **InputStreamReader** thay thế
+
+Method                                          |Description
+:-----------------------------------------------|:----------------------------------------------------------------------------------------------
+FileReader(String fileName)                     |tạo 1 **FileReader** để đọc nội dung từ đường dẫn đến tên file chỉ định, sử dụng **charset** mặc định của platform <br/>``fileName`` : đường dẫn đến tên file chỉ định để đọc
+FileReader(File file)                           |tạo 1 **FileReader** để đọc nội dung từ **File** chỉ định, sử dụng **charset** mặc định của platform <br/>``file`` : File chỉ định để đọc
+FileReader(FileDescriptor fd)                   |tạo 1 **FileReader** để đọc nội dung từ **FileDescriptor** chỉ định, sử dụng **charset** mặc định của platform <br/>``fd`` : FileDescriptor chỉ định để đọc
+FileReader(String fileName, Charset charset)    |tạo 1 **FileReader** để đọc nội dung từ đường dẫn đến tên file chỉ định, sử dụng **Charset** chỉ định để chuyển đổi nội dung <br/>``fileName`` : đường dẫn đến tên file chỉ định để đọc <br/>``charset`` : Charset chỉ định 
+FileReader(File file, Charset charset)          |tạo 1 **FileReader** để đọc nội dung từ **File** chỉ định, sử dụng **Charset** chỉ định để chuyển đổi nội dung <br/>``file`` : File chỉ định để đọc <br/>``charset`` : Charset chỉ định
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### FileReader_Ex1
+* ví dụ sử dụng **FileReader** để đọc các bytes từ file chỉ định
+```java
+import java.io.*;
+
+public class FileReader_Ex1 {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_06_FileReader\\FileReader_Ex1.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+
+        Reader reader = new FileReader(file);
+
+        int charCode;
+        while ((charCode = reader.read()) != -1) {
+            System.out.println((char) charCode + "\t" + charCode);
+        }
+
+        reader.close();
+    }
+}
+```
+* OUTPUT
+```
+F	70
+i	105
+l	108
+e	101
+ 	32
+C	67
+o	111
+n	110
+t	116
+e	101
+n	110
+t	116
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### FileReader với BufferedReader để tăng hiệu suất (1)
+* khi đọc 1 file văn bản, nên kết hợp giữa **FileReader** và **BufferedReader** để tăng hiệu suất sử dụng
+* ví dụ đọc 1 file danh sách Student.txt
+```text
+# Students:
+ 
+John P
+Sarah M
+# Sarah B
+Charles B
+Mary T
+Sophia B
+```
+* class chương trình
+```java
+import java.io.*;
+
+public class FileReader_in_BufferedReader {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_06_FileReader\\Student.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+
+        Reader reader = new FileReader(file);
+
+        BufferedReader bufferedReader = new BufferedReader(reader);
+
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        bufferedReader.close();
+        reader.close();
+    }
+}
+```
+* OUTPUT
+```text
+# Students:
+ 
+John P
+Sarah M
+# Sarah B
+Charles B
+Mary T
+Sophia B
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### FileReader với BufferedReader để tăng hiệu suất (2)
+* đọc nội dung file trên, kết hợp giữa **BufferedReader** và **FileReader**, nhưng bỏ qua những dòng bắt đầu với dấu ``#``
+```java
+import java.io.*;
+
+public class FileReader_in_BufferedReader_without_sharp_sign {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_06_FileReader\\Student.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+
+        Reader reader = new FileReader(file);
+
+        BufferedReader bufferedReader = new BufferedReader(reader);
+
+        bufferedReader.lines()
+                .filter(line -> !line.startsWith("#"))
+                .forEach(System.out::println);
+
+        bufferedReader.close();
+        reader.close();
+    }
+}
+```
+* OUTPUT
+```text
+ 
+John P
+Sarah M
+Charles B
+Mary T
+Sophia B
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### UTF-8 BOM (Byte Order Mark)
+* trước khi **UTF-8** trở nên phổ biến, các công cụ tạo ra file **UTF-8** luôn thêm vào **3 bytes** đầu tiên để đánh dấu rằng đây là file được mã hóa **UTF-8**, **3 bytes** này được gọi là **BOM (Byte Order Mark)**
+* trong khi các file **UTF-8** được tạo ra bởi **Java** không bao gồm **BOM**
+* **FileReader** không tự động loại bỏ **BOM** khi đọc các file **UTF-8**, đội ngũ thiết kế **Java** hiểu được điều này, tuy nhiên không 1 bản cập nhật nào được thực hiện, vì nó sẽ phá vỡ các thư viện của bên thứ 3 viết trên **Java** trước đó như **XML Parser**
+* dưới đây là link download 1 file **UTF-8** với **BOM**
+
+[https://s3.o7planning.com/txt/utf8-file-with-bom-test.txt](https://s3.o7planning.com/txt/utf8-file-with-bom-test.txt)
+
+* hoặc có thể tạo ra 1 file **UTF-8** với **BOM** bằng cách thêm ký tự có mã code = 65279 (được lưu trữ 3 bytes)
+```java
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+
+public class Create_file_UTF8_with_BOM {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_06_FileReader\\file_UTF8_with_BOM.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        Writer writer = new FileWriter(file);
+        writer.write(65279);
+        writer.write(72);
+        writer.write(101);
+        writer.write(108);
+        writer.write(108);
+        writer.write(111);
+
+        writer.close();
+    }
+}
+```
+* OUTPUT
+
+![img_27.png](img_27.png)
+
+* tiến hành đọc file trên để thấy ký tự 3 **bytes** có tồn tại trong file
+```java
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public class FileReader_UTF8_BOM {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_06_FileReader\\file_UTF8_with_BOM.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+
+        System.out.println("read by FileReader");
+        readByFileReader(file);
+        System.out.println();
+
+        System.out.println("read by InputStreamReader");
+        readByInputStreamReader(file);
+
+    }
+
+    public static void readByFileReader(File file) throws IOException {
+        Reader reader = new FileReader(file, StandardCharsets.UTF_8);
+
+        int charCode;
+        while ((charCode = reader.read()) != -1) {
+            System.out.println((char) charCode + "\t" + charCode);
+        }
+
+        reader.close();
+    }
+
+    public static void readByInputStreamReader(File file) throws IOException {
+        InputStream inputStream = new FileInputStream(file);
+        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+
+        int charCode;
+        while ((charCode = reader.read()) != -1) {
+            System.out.println((char) charCode + "\t" + charCode);
+        }
+
+        reader.close();
+        inputStream.close();
+    }
+}
+```
+* OUTPUT
+```text
+read by FileReader
+﻿	65279
+H	72
+e	101
+l	108
+l	108
+o	111
+
+read by InputStreamReader
+﻿	65279
+H	72
+e	101
+l	108
+l	108
+o	111
+```
+* ký tự với mã code = **65279** là ký tự không mong muốn nếu ta đọc các file **UTF-8** cũ với việc thêm **BOM** vào đầu file
+__________________________________________________________________________________________________________________________________________________________________________________
+### BOMInputStream
+* **BOMInputStream** là một lớp trong thư viện **Apache Commons IO** hỗ trợ **loại bỏ BOM**.
+  
+
+* **Maven dependency**
+```xml
+<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.8.0</version>
+</dependency>
+```
+* **BOMInputStreamEx1.java**
+```java
+package org.o7planning.filereader.ex;
+ 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+ 
+import org.apache.commons.io.input.BOMInputStream;
+ 
+public class BOMInputStreamEx1 {
+ 
+    public static void main(String[] args) throws IOException {
+        File file = new File("utf8-file-with-bom-test.txt");
+        FileInputStream fis = new FileInputStream(file);
+ 
+        BOMInputStream bis = new BOMInputStream(fis);
+ 
+        InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
+ 
+        int charCode;
+        while ((charCode = isr.read()) != -1) {
+            System.out.println((char) charCode + "  " + charCode);
+        }
+        isr.close();
+    }
+}
+```
+* OUTPUT
+```text
+H  72
+e  101
+l  108
+l  108
+o  111
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### UnicodeReader
+* **UnicodeReader** là một lớp nằm trong thư viện **"Google Data Java Client Library"** hỗ trợ **loại bỏ BOM**.
+
+
+* **Maven dependency**
+```xml
+<!-- https://mvnrepository.com/artifact/com.google.gdata/core -->
+<dependency>
+  <groupId>com.google.gdata</groupId>
+  <artifactId>core</artifactId>
+  <version>1.47.1</version>
+</dependency>
+```
+* **UnicodeReaderEx1.java**
+```java
+package org.o7planning.filereader.ex;
+ 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+ 
+import com.google.gdata.util.io.base.UnicodeReader;
+ 
+public class UnicodeReaderEx1 {
+ 
+    public static void main(String[] args) throws IOException {
+        File file = new File("utf8-file-with-bom-test.txt");
+        FileInputStream fis = new FileInputStream(file);
+         
+        UnicodeReader isr = new UnicodeReader(fis, "UTF-8");
+ 
+        int charCode;
+        while ((charCode = isr.read()) != -1) {
+            System.out.println((char) charCode + "  " + charCode);
+        }
+        isr.close();
+    }  
+}
+```
+* OUTPUT
+```text
+H  72
+e  101
+l  108
+l  108
+o  111
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 7. CharArrayWriter <a id="7"></a>
