@@ -1773,15 +1773,668 @@ o  111
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 7. CharArrayWriter <a id="7"></a>
+* **CharArrayWriter** là 1 **subclass** của **Writer**, nó được sử dụng để ghi các **Char** vào **Array** theo cách của **Writer**
+* các ký tự được ghi vào **CharArrayWriter** sẽ được gán vào các phần tử của mảng đệm bên trong **CharArrayWriter** đang quản lý
+
+![img_28.png](img_28.png)
+
+* khi số lượng các ký tự ghi vào **CharArrayWriter** lớn hơn độ dài của mảng bên trong **CharArrayWriter**, thì **CharArrayWriter** sẽ tạo ra mảng mới với độ dài lớn hơn và copy các ký tự từ mảng cũ sang
+
+### CharArrayWriter Constructors
+```java
+public class CharArrayWriter extends Writer {
+  public CharArrayWriter() {//...}
+  public CharArrayWriter(int initialSize) {//...}
+}
+```
+
+Constructor                       |Description
+:---------------------------------|:-----------------------------------------------
+CharArrayWriter()                 |tạo 1 **CharArrayWriter** với **Array** của các **Char** với **size** mặc định là **32** để ghi các ký tự vào **CharArrayWriter**
+CharArrayWriter(int initialSize)  |tạo 1 **CharArrayWriter** với **Array** của các **Char** với **size** chỉ định là ``initialSize`` để ghi các ký tự vào **CharArrayWriter** <br/>``initialSize`` : kích thước chỉ định ban đầu cho mảng đệm
+
+
+### CharArrayWriter Methods
+```java
+public class CharArrayWriter extends Writer {
+  public void write(int c) {//...}
+  public void write(char[] c, int off, int len) {//...}
+  public void write(String str, int off, int len) {//...}
+  public void writeTo(Writer out) throws IOException {//...}
+      
+  public CharArrayWriter append(char c) {//...}    
+  public CharArrayWriter append(CharSequence csq) {//...}
+  public CharArrayWriter append(CharSequence csq, int start, int end) {//...}
+      
+  public char[] toCharArray() {//...}
+  public String toString() {//...}
+      
+  public void flush() { }
+  public void close() { }
+  public void reset() {//...}
+  public int size() {//...}
+}
+```
+
+Return Data       |Method                                       |Description
+:-----------------|:--------------------------------------------|:-----------------------------------------------------------
+void              |write(int c)                                 |ghi 1 ký tự vào mảng đệm <br/>``c`` : ký tự chỉ định
+void              |write(char[] c, int off, int len)            |ghi 1 phần của mảng ký tự vào mảng đệm, bắt đầu từ vị trí ``off`` ghi số lượng ký tự là ``len`` của mảng đầu vào <br/>``c`` : mảng dữ liệu chỉ định để ghi <br/>``off`` : vị trí bắt đầu lấy dữ liệu <br/>``len`` : số lượng ký tự tối đa lấy dữ liệu để ghi bắt đầu từ ``off`` 
+void              |write(String str, int off, int len)          |ghi 1 phần của chuỗi String vào mảng đệm, bắt đầu tự vị trí ``off`` ghi số lượng ký tự là ``len`` của String đầu vào <br/>``str`` : String chỉ định lấy dữ liệu để ghi <br/>``off`` : vị trí bắt đầu trên String chỉ định <br/>``len`` : số lượng ký tự lấy tối đa trên String
+void              |writeTo(Writer out)                          |ghi nội dung của mảng đệm trong **CharArrayWriter** vào character stream khác <br/>``out`` : output character stream đích chỉ định 
+CharArrayWriter   |append(char c)                               |nối 1 ký tự chỉ định vào writer này <br/>``c`` : ký tự chỉ định
+CharArrayWriter   |append(CharSequence csq)                     |nối 1 chuỗi ký tự **CharSequence** chỉ định vào writer này <br/>``csq`` : **CharSequence** chỉ định
+CharArrayWriter   |append(CharSequence csq, int start, int end) |nối 1 phần của chuỗi ký tự **CharSequence** chỉ định vào writer này <br/>``csq`` : **CharSequence** chỉ định <br/>``start`` : vị trí bắt đầu lấy ký tự trong **CharSequence** <br/>``end`` : vị trí kết thúc lấy ký tự
+char[]            |toCharArray()                                |trả về bản sao dữ liệu nhập vào trong mảng đệm buffer trong **CharArrayWriter**
+String            |toString()                                   |trả về 1 dữ liệu bản sao của dữ liệu nhập vào trong mảng buffer được chuyển sang kiểu 1 String
+void              |flush()                                      |xả dữ liệu trên stream xuống mục tiêu
+void              |close()                                      |đóng stream
+void              |reset()                                      |thiết lập lại mảng buffer về trạng thái ban đầu để tái sử dụng, mà không cần phải lãng phí bộ nhớ
+int               |size()                                       |lấy **size** hiện tại của mảng buffer trong **CharArrayWriter**
+
+__________________________________________________________________________________________________________________________________________________________________________________
+
+### CharArrayWriter Example 1
+* write, append các ký tự, chuỗi vào 1 **CharArrayWriter**
+* lấy dữ liệu của **CharArrayWriter** dưới dạng 1 mảng ký tự
+
+```java
+import java.io.CharArrayWriter;
+import java.io.IOException;
+
+public class CharArrayWriter_write_to_array {
+    public static void main(String[] args) throws IOException {
+        CharArrayWriter charArrayWriter = new CharArrayWriter(1024);
+
+        charArrayWriter.write("One");
+
+        charArrayWriter.append(' ').append("Two");
+
+        charArrayWriter.write(' ');
+        charArrayWriter.append("Three");
+
+        char[] charArray = charArrayWriter.toCharArray();
+
+        System.out.println(charArray);
+        
+        charArrayWriter.close();
+    }
+}
+```
+* OUTPUT
+```text
+One Two Three
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### CharArrayWriter Example 2
+* ghi 2 mảng ký tự vào 1 CharArrayWriter, in ra mảng ký tự bản sao của dữ liệu của CharArrayWriter
+
+```java
+import java.io.CharArrayWriter;
+import java.io.IOException;
+
+public class CharArrayWriter_combile_2_char_array {
+    public static void main(String[] args) {
+        String s = "Hello";
+        char[] arr1 = s.toCharArray();
+
+        char[] arr2 = new char[] {'W','o','r','l','d','!'};
+
+        char[] result = add(arr1, arr2);
+
+        System.out.println(result);
+    }
+
+    private static char[] add(char[] arr1, char[] arr2) {
+        if (arr1 == null) {
+            return arr2;
+        }
+        if (arr2 == null) {
+            return arr1;
+        }
+        CharArrayWriter charArrayWriter = new CharArrayWriter();
+        try {
+            charArrayWriter.write(arr1);
+            charArrayWriter.write(arr2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return charArrayWriter.toCharArray();
+    }
+}
+```
+* OUTPUT
+```text
+HelloWorld!
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 8. CharArrayReader <a id="8"></a>
+* **CharArrayReader** là 1 **subclass** của **Reader**, nó được sử dụng để đọc 1 **Array** các **Char** theo cách cách của 1 **Reader**
+
+### CharArrayReader Constructors
+```java
+public class CharArrayReader extends Reader {
+  public CharArrayReader(char[] buf) {//...}
+  public CharArrayReader(char[] buf, int offset, int length) {//...}
+}
+```
+
+Constructor                                         |Description
+:---------------------------------------------------|:---------------------------------------------------------------------------------
+CharArrayReader(char[] buf)                         |tạo 1 **CharArrayReader** để đọc các ký tự từ 1 mảng ký tự chỉ định <br/>``buf`` : **char[]** chỉ định để đọc các ký tự
+CharArrayReader(char[] buf, int offset, int length) |tạo 1 **CharArrayReader** để đọc các ký tự từ 1 phần của mảng ký tự chỉ định, bắt đầu từ vị trí ``offset`` trong mảng đọc tối đa số lượng ký tự là ``length`` <br/>``buf`` : **char[]** chỉ định để đọc các ký tự <br/>``offset`` : vị trí bắt đầu đọc ký tự trong ``buf`` <br/>``length`` : số lượng ký tự tối đa đọc được bắt đầu từ ``offset`` <br/>
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### CharArrayReader Methods
+```java
+public class CharArrayReader extends Reader {
+  private void ensureOpen() throws IOException {//...}
+  public int read() throws IOException {//...}
+  public int read(char[] b, int off, int len) throws IOException {//...}
+  public long skip(long n) throws IOException {//...}
+  public boolean ready() throws IOException {//...}
+  public boolean markSupported() {//...}
+  public void mark(int readAheadLimit) throws IOException {//...}
+  public void reset() throws IOException {//...}
+  public void close() {//...}
+}
+```
+
+Return Data   |Method                           |Description
+:-------------|:--------------------------------|:------------------------------------------------
+void          |ensureOpen()                     |kiểm tra xem stream có bị đóng chưa
+int           |read()                           |đọc 1 ký tự trong mảng ký tự<br/>trả về charCode của ký tự là giá trị kiểu ``int`` trong khoảng **(0 ; 65535)** <br/>trả về **-1** nếu đã đọc đến cuối stream
+int           |read(char[] b, int off, int len) |đọc các ký tự trong 1 phần của mảng ký tự chỉ định <br/>trả về số lượng ký tự đã đọc được trong mảng <br/>trả về **-1** nếu đã đọc đến cuối stream <br/>``b`` : **char[]** chỉ định để đọc ký tự <br/>``off`` : vị trí bắt đầu đọc trong``b`` <br/>``len`` : số lượng ký tự tối đa 1 lần đọc trong ``b`` bắt đầu từ ``off``
+long          |skip(long n)                     |bỏ qua không đọc 1 số lượng ``n`` ký tự trong mảng ký tự <br/>trả về số lượng ký tự thực tế bị bỏ qua <br/>``n`` : số lượng ký tự bỏ qua
+boolean       |ready()                          |kiểm tra có sẵn ký tự để đọc hay không <br/>trả về ``true`` nếu có sẵn ký tự để đọc và lệnh đọc tiếp theo được đảm bảo sẽ không bị block đầu vào ngược lại là ``false`` 
+boolean       |markSupported()                  |kiểm tra có hỗ trợ thao tác đánh dấu hay không, trả về ``true`` nếu có, ngược lại là ``false``
+void          |mark(int readAheadLimit)         |đánh dấu vị trí hiện tại, lệnh gọi tiếp theo reset sẽ quay lại đọc từ vị trí này, nếu chưa đọc quá giới hạn của lệnh mark<br/>``readAheadLimit`` : giới hạn đọc số lượng ký tự để lệnh **reset()** có thể quay trở lại vị trí đã đanh dấu
+void          |reset()                          |quay trở lại vị trí đã đánh dấu, hoặc trở lại từ đầu nếu lệnh **mark()** chưa được gọi lần nào
+void          |close()                          |đóng stream
+
+### CharArrayReader Example 1
+* sử dụng **CharArrayReader** để đọc các ký tự từ 1 mảng char[]
+
+```java
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.Reader;
+
+public class CharArrayReader_read_a_charArray {
+    public static void main(String[] args) throws IOException {
+        String s = "This is a text !!!";
+        char[] charArray = s.toCharArray();
+
+        Reader reader = new CharArrayReader(charArray);
+
+        int charCode;
+        while ((charCode = reader.read()) != -1) {
+            char c = (char) charCode;
+            System.out.println(c);
+        }
+
+        reader.close();
+    }
+}
+```
+* OUTPUT
+```text
+T
+h
+i
+s
+ 
+i
+s
+ 
+a
+ 
+t
+e
+x
+t
+ 
+!
+!
+!
+```
+### CharArrayReader Example 2
+* sử dụng **CharArrayReader** để đọc 1 mảng **char[]**, sau đó loại bỏ không đọc những ký tự không phải là số
+* tiến hành ghi những ký tự số vào **CharArrayWriter**
+
+```java
+import java.io.*;
+
+public class CharArrayReader_read_digit_only {
+    public static void main(String[] args) throws IOException {
+        String s = "Log20210217.txt";
+        char[] origin = s.toCharArray();
+
+        CharArrayReader reader = new CharArrayReader(origin);
+        CharArrayWriter writer = new CharArrayWriter();
+
+        int charCode;
+        while ((charCode = reader.read()) != -1) {
+            if (charCode >= 48 && charCode <= 57) {
+                writer.write(charCode);
+            }
+        }
+
+        char[] newCharArray = writer.toCharArray();
+        System.out.println(newCharArray);
+
+        String newText = writer.toString();
+        System.out.println(newText);
+    }
+}
+```
+* OUTPUT
+```text
+20210217
+20210217
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### CharArrayReader Example 3
+* xử lý 1 đoạn văn bản với nhiều khoảng trắng ở đầu và cuối dòng
+* kết hợp **CharArrayReader** và **BufferedReader** để tăng hiệu suất sử dụng bằng cách đọc từng dòng
+* sử dụng **StringBuilder** để nối những dòng đã được trim() khoảng trắng ở 2 đầu với nhau
+* lấy 1 chuỗi **String** từ **StringBuilder**
+```java
+public class CharArrayReader_trim {
+    public static void main(String[] args) throws IOException {
+        String originText = "  One \n Two \t\n \t\t Three ";
+        System.out.println(originText);
+        System.out.println("---------------------------------------------------------------");
+
+        String newText = trimLine(originText);
+        System.out.println(newText);
+    }
+
+    private static String trimLine(String str) throws IOException {
+        char[] cbuf = str.toCharArray();
+        CharArrayReader charArrayReader = new CharArrayReader(cbuf);
+        BufferedReader bufferedReader = new BufferedReader(charArrayReader);
+        StringBuilder stringBuilder = new StringBuilder(str.length());
+
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line.trim()).append('\n');
+        }
+
+        return stringBuilder.toString();
+    }
+}
+```
+* OUTPUT
+```text
+  One 
+ Two 	
+ 		 Three 
+---------------------------------------------------------------
+One
+Two
+Three
+
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 9. FilterWriter <a id="9"></a>
+* **FilterWriter** là **1 abstract class**, nó là **subclass** của **Writer**
+* **FilterWriter** là lớp cơ sỡ để tạo ra các **subclass** có thể ghi 1 cách có chọn lọc các ký tự theo yêu cầu<br/><br/>
+
+* **FilterWriter** không trực tiếp ghi các ký tự vào mục tiêu (ví dụ như file), thay vào đó nó quản lý 1 *Writer** khác mà **Writer** đó chịu trách nhiệm ghi dữ liệu vào mục tiêu
+* **FilterWriter** chịu trách nhiệm lọc, chỉnh sửa các ký tự được ghi vào nó, sau đó nó mới ghi kết quả sang **Writer** mà nó quản lý
+
+![img_29.png](img_29.png)
+
+* trong mã nguồn của **FilterWriter**, tất cả các method mà nó kế thừa từ **superclass** đều đã được **override** (ghi đè) để hoạt động như 1 trình ủy quyền của class **Writer** mà nó quản lý
+
+```java
+package java.io;
+
+public abstract class FilterWriter extends Writer {  
+    protected Writer out;
+     
+    protected FilterWriter(Writer out) {
+        super(out);
+        this.out = out;
+    }
+    public void write(int c) throws IOException {
+        out.write(c);
+    }
+    public void write(char cbuf[], int off, int len) throws IOException {
+        out.write(cbuf, off, len);
+    }
+    public void write(String str, int off, int len) throws IOException {
+        out.write(str, off, len);
+    }
+    public void flush() throws IOException {
+        out.flush();
+    }
+    public void close() throws IOException {
+        out.close();
+    }
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### FilterWriter Constructor
+* **access modifier** constructor của **FilterWriter** là **protected** nên chỉ được sử dụng bởi **subclass** của nó
+
+Constructor              |Description
+:------------------------|:--------------------------------------------------------
+FilterWriter(Writer out) |tạo 1 **FilterWriter** <br/>``out`` : **Writer** mà **FilterWriter** quản lý
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### FilterWriter Example 1
+* tạo 1 class dùng để mã hóa dữ liệu kiểu mật mã tên là **ROT13** (rotate 13)
+* **ROT13** sẽ chuyển ký tự đầu vào sang ký tự đầu ra cách đó 13 ký tự
+* trong bảng chữ cái latinh gồm [a ; z] và [A ; Z]
+* **ROT13** là một mật mã thay thế chữ cái (letter substitution cipher) đơn giản, nó thay thế mỗi chữ cái bởi 1 chữ cái đứng sau nó 13 vị trí trên bảng chữ cái
+* **ROT13** là 1 trường hợp đơn giản của mật mã **Caesar** (**Caesar** cipher)
+* Dưới đây là bảng các chữ cái và các chữ cái thay thế tương ứng của chúng, kết quả của việc sử dụng thuật toán **ROT13**.
+
+![img_30.png](img_30.png)
+
+* bảng chữ cái latinh về cơ bản có 26 (2x13) chữ cái, nên về cơ bản thuật toán **ROT13** sẽ biến đổi 1 chữ cái thành 1 chữ cái khác, và sử dụng chính thuật toán này để đảo ngược kết quả
+* chẳng hạn thuật toán **ROT13** biến chữ "**A**" thành chữ "**N**", và sử dụng thuật toán **ROT13** cho "**N**" để biến thành chữ "**A**"
+* **ROT13** được coi là 1 ví dụ điển hình về 1 mật mã hóa (encryption) yếu
+* class **ROT13** dưới đây cung cấp 1 method static **rotate(int)** chấp nhận đầu vào là 1 chữ cái và trả về 1 chữ cái theo thuật toán **ROT13**
+```java
+public class ROT13 {
+    public static int rotate(int inChar) {
+        int outChar;
+
+        if (inChar >= 'a' && inChar <= 'z') {
+            outChar = (((inChar - 'a') + 13) % 26) + 'a';
+        } else if (inChar >= 'A' && inChar <= 'Z') {
+            outChar = (((inChar - 'A') + 13) % 26) + 'A';
+        } else {
+            outChar = inChar;
+        }
+
+        return outChar;
+    }
+    
+    // TEST
+    public static void main(String[] args) {
+        for (char i = 'a'; i <= 'z' ; i++) {
+            char n = (char) rotate(i);
+            System.out.println(i + " " + n);
+        }
+        for (char i = 'A'; i < 'Z'; i++) {
+            char n = (char) rotate(i);
+            System.out.println(i + " " + n);
+        }
+    }
+}
+```
+* viết lớp **ROT13Writer** extends từ **FilterWriter**, các ký tự được ghi vào **ROT13Writer** sẽ được thay thế theo thuật toán của **ROT13**
+```java
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.Writer;
+
+public class ROT13Writer extends FilterWriter {
+    /**
+     * Create a new filtered writer.
+     *
+     * @param out a Writer object to provide the underlying stream.
+     * @throws NullPointerException if <code>out</code> is <code>null</code>
+     */
+    protected ROT13Writer(Writer out) {
+        super(out);
+    }
+
+    @Override
+    public void write(int c) throws IOException {
+        super.write(ROT13.rotate(c));
+    }
+
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        char[] tempBuff = new char[len];
+        for (int i = 0; i < len; i++) {
+            tempBuff[i] = (char) ROT13.rotate(off + i);
+        }
+        super.write(tempBuff, 0, len);
+    }
+
+    @Override
+    public void write(String str, int off, int len) throws IOException {
+        char[] cbuf = str.toCharArray();
+        this.write(cbuf, off, len);
+    }
+}
+```
+* ví dụ sử dụng **ROT13Writer**
+```java
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+public class ROT13Writer_Test {
+    public static void main(String[] args) throws IOException {
+        Writer targetWriter = new StringWriter();
+        FilterWriter filterWriter = new ROT13Writer(targetWriter);
+
+        String inputString = "Hello World !!!";
+
+        filterWriter.write(inputString);
+        filterWriter.close();
+
+        String outputString = targetWriter.toString();
+        System.out.println(inputString + " ----> " + outputString);
+    }
+}
+```
+* OUTPUT
+```text
+Hello World !!! ----> Uryyb Jbeyq !!!
+```
+* ví dụ sử dụng **ROT13Writer** để ghi dữ liệu vào file
+```java
+import java.io.*;
+
+public class ROT13Writer_Test2 {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_09_FilterWriter\\RotWriter-out-file.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        Writer writer = new FileWriter(file);
+        FilterWriter filterWriter = new ROT13Writer(writer);
+
+        String inputString = "Hello World !!!";
+
+        filterWriter.write(inputString);
+        filterWriter.close();
+    }
+}
+```
+* OUTPUT
+
+![img_31.png](img_31.png)
+
+
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 10. FilterReader <a id="10"></a>
+* **FilterReader** là 1 **abstract class**, là **subclass** của **abstract class Reader**
+* **FilterReader** là 1 lớp cơ sở để tạo ra các lớp con để đọc 1 cách có chọn lọc các ký tự theo yêu cầu
+* bạn không thể sử dụng trực tiếp lớp **FilterReader** vì nó là 1 lớp trừu tượng (**abstract class**)
+* ví dụ nếu muốn đọc 1 văn bản **HTML**, và bỏ qua các thẻ (**tag**), bạn cần viết 1 lớp con của **FilterReader**<br/><br/>
+
+* **FilterReader** không trực tiếp đọc dữ liệu từ nguồn gốc (chẳng hạn như file) mà nó quản lý 1 **Reader** khác, **Reader** này chịu trách nhiệm đọc dữ liệu từ nguồn gốc
+* **FilterReader** xử lý 1 cách có chọn lọc các dữ liệu có được từ **Reader** mà nó quản lý
+
+![img_32.png](img_32.png)
+
+* mã nguồn của **FilterReader** cho thấy, tất cả các phương thức mà nó kế thừa từ lớp **Reader** đã được ghi đè (**override**) để hoạt động như 1 trình ủy quyền của đối tượng **Reader** mà nó quản lý
+```java
+package java.io;
+ 
+public abstract class FilterReader extends Reader {
+    protected Reader in;
+  
+    protected FilterReader(Reader in) {
+        super(in);
+        this.in = in;
+    }
+    public int read() throws IOException {
+        return in.read();
+    }
+    public int read(char cbuf[], int off, int len) throws IOException {
+        return in.read(cbuf, off, len);
+    }
+    public long skip(long n) throws IOException {
+        return in.skip(n);
+    }  
+    public boolean ready() throws IOException {
+        return in.ready();
+    }
+    public boolean markSupported() {
+        return in.markSupported();
+    }
+    public void mark(int readAheadLimit) throws IOException {
+        in.mark(readAheadLimit);
+    }
+    public void reset() throws IOException {
+        in.reset();
+    }
+    public void close() throws IOException {
+        in.close();
+    }
+}
+```
+### FilterReader Constructor
+* **access modifier** constructor của **FilterReader** là **protected** nên nó chỉ được sử dụng bởi **subclass** của nó
+
+Constructor             |Description
+:-----------------------|:---------------------------------------------------------
+FilterReader(Reader in) |tạo 1 **FilterReader** mới với ``in`` là 1 **Reader** tham số đầu vào dùng để đọc stream
+
+### FilterReader Example 1
+* viết 1 class **extends FilterReader** để đọc văn bản **HTML** nhưng bỏ qua các **tag** (thẻ)
+```java
+import java.io.FilterReader;
+import java.io.IOException;
+import java.io.Reader;
+
+public class RemoveHtmlTagReader extends FilterReader {
+
+    private boolean intag = false;
+
+    public RemoveHtmlTagReader(Reader in) {
+        super(in);
+    }
+
+    // We override this method.
+    // The principle will be:
+    // Read only characters outside of the tags.
+    @Override
+    public int read(char[] buf, int from, int len) throws IOException {
+        // charCount : biến dùng để đếm số ký tự cần đọc
+        int charCount = 0;
+
+        // vòng lặp while khi nào charCount != 0 thì thoát
+        // đồng thời copy nội dung cần lấy sau khi loại bỏ các tag HTML
+        while (charCount == 0) {
+
+            // lấy số ký tự cần đọc, lúc này bao gồm cả ký tự tag của HTML
+            charCount = super.read(buf, from, len);
+
+            // nếu đọc các ký tự mà bị trả về cuối stream = -1 thì return = -1 và thoát while
+            if (charCount == -1) {
+                // Ends of
+                return -1;
+            }
+
+            //
+            int last = from;
+
+            // vòng lặp for chạy từ from đến charCount
+            // if-else dùng để kiểm tra tag bắt đầu và tag kết thúc
+            // chỉ khi nào đã kiểm tra gặp tag kết thúc mới tiến hành gán ký tự ở vị trí hiện tại
+            for (int i = from; i < from + charCount; i++) {
+                // ở đây có 2 trường hợp để lệnh if này true
+                // giá trị ban đầu intag=false -> if(true)
+                // vị trị hiện tại là tag kết thúc '>' , nên intag=false -> if(true)
+                if (!this.intag) {
+                    // lệnh if này chỉ xảy ra khi intag=false
+                    if (buf[i] == '<') {
+                        this.intag = true;
+                    // lệnh else này chỉ được xảy ra khi đã duyệt qua tag kết thúc '>' , intag=false, nhưng
+                        // vị trí hiện tại không phải tag bắt đầu '<', -> đã mở tag và đóng tag, và vị trí hiện
+                        // tại không phải đang mở tag mới, mà là nội dung cần đọc
+                        // ===> tiến hành sao chép dữ liệu tại vị trí hiện tại [i] cho [last], sau đó tăng last = last + 1
+                    } else {
+                        buf[last] = buf[i];
+                        last++;
+                        // có thể viết gọn
+                        // buf[last] = buf[i];
+                        // last++;
+                        // ==> thành
+                        // buf[last++] = buf[i];
+                    }
+                // else if này chỉ xảy ra khi đã duyệt qua tag bắt đầu '<', intag=true, -> if(false)
+                } else if (buf[i] == '>') {
+                    // lệnh intaf=false chỉ được thực hiện khi gặp tag kết thúc '>'
+                    // sau đó nhảy đến lệnh kiểm tra có phải tag bắt đầu, nếu không phải tag bắt đầu, chính là dữ liệu cần copy
+                    this.intag = false;
+                }
+            }
+            charCount = last - from;
+        }
+        return charCount;
+    }
+
+    // Also need to override this method.
+    @Override
+    public int read() throws IOException {
+        char[] buf = new char[1];
+        int result = read(buf, 0, 1);
+        if (result == -1) {
+            return -1;
+        } else {
+            return (int) buf[0];
+        }
+    }
+}
+```
+* chương trình test
+```java
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+public class RemoveHtmlTagTest {
+    public static void main(String[] args) throws IOException {
+        // Create a Reader.
+        Reader in = new StringReader("<h1>Hello \n <b>World</b><h1>");
+
+        RemoveHtmlTagReader filterReader = new RemoveHtmlTagReader(in);
+        BufferedReader br = new BufferedReader(filterReader);
+
+        String s = null;
+        while ((s = br.readLine()) != null) {
+            System.out.println(s);
+        }
+        br.close();
+    }
+}
+```
+* OUTPUT
+```text
+Hello 
+ World
+ 
+```
+
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 11. PushbackReader <a id="11"></a>
