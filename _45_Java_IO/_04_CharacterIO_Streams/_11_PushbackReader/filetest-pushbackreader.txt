@@ -1,0 +1,6 @@
+3 + 5 = 8 -- This is an Addition (+)
+100 - 10 = 90 -- This is a Subtraction (-)
+-- Multiplication:
+2 * 3 = 6
+-- Division:
+200 / 20 = 10

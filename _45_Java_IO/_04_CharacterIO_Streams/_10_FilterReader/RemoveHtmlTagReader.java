@@ -29,11 +29,10 @@ public class RemoveHtmlTagReader extends FilterReader {
 
             // nếu đọc các ký tự mà bị trả về cuối stream = -1 thì return = -1 và thoát while
             if (charCount == -1) {
-                // Ends of
                 return -1;
             }
 
-            //
+            // thiết lập vị trí ban đầu của mảng sao chép bắt đầu từ from
             int last = from;
 
             // vòng lặp for chạy từ from đến charCount

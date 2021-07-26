@@ -14,6 +14,10 @@ public class RemoveHtmlTagTest {
         BufferedReader br = new BufferedReader(filterReader);
 
         String s = null;
+        // khi method readLine() được gọi, bufferedReader sẽ đọc nội dung được trả về bởi Reader mà nó quản lý
+        // ở đây là RemoveHtmlTagReader
+        // RemoveHtmlTagReader sẽ đọc nội dung của Reader mà nó quản lý là StringReader đồng thời loại bỏ các tag
+        // sau đó trả về cho BufferedReader đọc
         while ((s = br.readLine()) != null) {
             System.out.println(s);
         }

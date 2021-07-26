@@ -2438,6 +2438,150 @@ Hello
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 11. PushbackReader <a id="11"></a>
+* **PushbackReader** là 1 **subclass** của **FilterReader**, nó quản lý 1 đối tượng **Reader** và đối tượng **Reader** này chịu trách nhiệm đọc dữ liệu từ nguồn gốc (ví dụ như file), đồng thời **PushbackReader** cũng quản lý 1 mảng **buffer** bên trong nó để quản lý các ký tự mà nó **unread()** và **Pushback** (đẩy ngược trở lại) chờ đến lần **read()** kế tiếp sẽ lấy ra đọc
+* cách hoạt động của **PushbackReader** có thể biểu diễn như sau
+* 1 - nếu mảng **buffer** mà **PushbackReader** quản lý chưa có bất kỳ ký tự nào, khi **PushbackReader.read()** được gọi nó sẽ luôn luôn trả về các ký tự của **Reader.read()**
+  
+![img_33.png](img_33.png)
+
+* 2 - nếu **PushbackReader.unread()** được gọi, thì ký tự vừa được gọi từ **Reader.read()** sẽ được **Pushback** trở lại và lưu trữ vào mảng **buffer**, đợi cho lần đọc tiếp theo của chính **PushbackReader.read()**
+
+![img_34.png](img_34.png)
+
+* 3 - trong lần đọc tiếp theo, sẽ là lệnh của **PushbackReader.read()** và kết quả trả về là các ký tự được lưu trữ trong mảng **buffer**, chỉ khi nào các ký tự trong mảng **buffer** được đọc hết, thì **Reader.read()** mới được gọi, và vị trí ký tự trả về từ **Reader.read()** mà **PushbackReader** quản lý vẫn tiếp diễn như bình thường (ký tự nào chưa đọc trên **Reader** thì vẫn tiếp tục đọc, còn ký tự đã được đọc và lưu trữ trên **buffer** của **PushbackReader** là chuyện của **PushbackReader**)
+
+![img_35.png](img_35.png)
+
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PushbackReader Constructors
+```java
+public class PushbackReader extends FilterReader {
+    public PushbackReader(Reader in, int size) {//...}
+    public PushbackReader(Reader in) {//...}
+}
+```
+
+Constructor                         |Description
+:-----------------------------------|:-------------------------------------------------
+PushbackReader(Reader in)           |tạo 1 đối tượng **PushbackReader** với kích thước của mảng **buffer** mà nó quản lý có giá trị mặc định là **1** <br/>``in`` : đối tượng **Reader** mà **PushbackReader** quản lý để đọc dữ liệu
+PushbackReader(Reader in, int size) |tạo 1 đối tượng **PushbackReader** với kích thước của mảng **buffer** mà nó quản lý có giá trị chỉ định là ``size`` <br>``in`` : đối tượng **Reader** mà **PushbackReader** quản lý để đọc dữ liệu <br/>``size`` : kích thước chỉ định của mảng **buffer** mà **PushbackReader** quản lý 
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PushbackReader Methods
+```java
+public class PushbackReader extends FilterReader {
+  private void ensureOpen() throws IOException {//...}
+      
+  public int read() throws IOException {//...}
+  public int read(char cbuf[], int off, int len) throws IOException {//...}
+      
+  public void unread(int c) throws IOException {//...}
+  public void unread(char cbuf[], int off, int len) throws IOException {//...}
+  public void unread(char cbuf[]) throws IOException {//...}
+      
+  public boolean ready() throws IOException {//...}
+  public void mark(int readAheadLimit) throws IOException {//...}
+  public void reset() throws IOException {//...}
+  public boolean markSupported() {//...}
+  public void close() throws IOException {//...}
+  public long skip(long n) throws IOException {//...}
+}
+```
+
+Return Data |Method                                |Description
+:-----------|:-------------------------------------|:--------------------------------------------------------
+void        |ensureOpen()                          |
+int         |read()                                |đọc 1 ký tự trong mảng đệm của **PushbackReader** nếu có ký tự bị **unread()** và đẩy ngược lại cho **PushbackReader** <br/>trả về mã code của ký tự đọc được
+int         |read(char cbuf[], int off, int len)   |đọc 1 phần mảng đệm ký tự của **PushbackReader** nếu có 1 mảng ký tự trước đó bị **unread(char[], int, int)** và đẩy ngược lại cho **PushbackReader** <br/>trả về số lượng ký tự đọc được trong mảng đệm ``cbuf`` từ vị trí ``off`` đến vị trí ``off + len``
+void        |unread(int c)                         |khi method này được gọi, nghĩa là xem như ký tự ``c`` là chưa được đọc, và đẩy nó ngược trở lại **PushbackReader**, bằng cách sao chép nó vào mảng đệm của **PushbackReader**<br/>ở lần đọc kế tiếp, khi method **read()** được gọi, giá trị trả về chính là ký tự này được trả về đọc trước tiên <br/>``c`` : mã code của ký tự được **pushback** là giá trị kiểu ``int``
+void        |unread(char cbuf[], int off, int len) |khi method này được gọi, nghĩa là xem như mảng ký tự ``cbuf`` là chưa được đọc, và đẩy nó ngược trở lại **PushbackReader**, bằng cách sao chép nó vào mảng đệm của **PushbackReader**<br/>ở lần đọc kế tiếp, khi method **read(char[], int, int)** được gọi, giá trị trả về chính là mảng ký tự này được trả về đọc trước tiên <br/>``cbuf`` : mảng ký tự bị **pushback** <br/>``off`` : vị trí ký tự bắt đầu xem như là chưa được đọc và bị đẩy ngược trong ``cbuf`` <br/>``len`` : số ký tự tối đa xem như là chưa đượ đọc và bị đẩy ngược bắt đầu từ ``off`` trong ``cbuf`` 
+void        |unread(char cbuf[])                   |khi method này được gọi, nghĩa là xem như mảng ký tự ``cbuf`` là chưa được đọc, và đẩy nó ngược trở lại **PushbackReader** <br/>``cbuf`` : mảng ký tự chỉ định **pushback**
+boolean     |ready()                               |kiểm tra có ký tự để đọc hay không
+void        |mark(int readAheadLimit)              |đánh dấu vị trí hiện tại trên stream
+void        |reset()                               |quay trở lại vị trí đã đánh dấu trước đó, với điều kiện chưa vượt qua vị trí cho phép được quay trở lại chỉ định trong phương thức đánh dấu
+boolean     |markSupported()                       |kiểm tra stream có hỗ trợ đánh dấu hay không
+void        |close()                               |đóng stream
+long        |skip(long n)                          |bỏ qua 1 số lượng ký tự trên stream và không đọc chúng
+
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PushbackReader Example 1
+* giả sử ta có 1 file text, trong file text này chứa những comment bắt đầu bằng 2 dấu gạch nối ``--``, và kết thúc bằng ký tự xuống dòng ``\n``
+* nhiệm vụ là xây dựng thuật toán sao cho khi đọc file text này, đoạn ký tự nào được xem là comment sẽ bị bỏ qua và không đọc
+* sử dụng **PushbackReader** để **unread()** ký tự mà được kiểm tra là bình thường
+* ví dụ sau 1 ký tự ``-`` không phải tiếp tục là ký tự ``-`` nữa, thì ký tự phía sau được xem là bình thường, và ta phải **pushback** nó trở lại, lưu tạm vào **PushbackReader** chờ để tái đọc cho lần kế tiếp
+* filetest-pushbackreader.txt [D:\Learning\Java\JavaOOP\src\_45_Java_IO\_04_CharacterIO_Streams\_11_PushbackReader\filetest-pushbackreader.txt]()
+```text
+3 + 5 = 8 -- This is an Addition (+)
+100 - 10 = 90 -- This is a Subtraction (-)
+-- Multiplication:
+2 * 3 = 6
+-- Division:
+200 / 20 = 10
+```
+* chương trình xử lý
+```java
+import java.io.*;
+
+public class PushbackReader_Ex1 {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_11_PushbackReader\\filetest-pushbackreader.txt";
+
+    public static void main(String[] args) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        Reader reader = new FileReader(file);
+        PushbackReader pushbackReader = new PushbackReader(reader);
+
+        // dùng để nối các ký tự cần đọc
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // hiện không đang trong đoạn comment, biến đánh dấu là false
+        boolean inComment = false; // không trong comment
+
+        // đọc file
+        int currentChar; // ký tự hiện tại đang đọc
+        while ((currentChar = pushbackReader.read()) != -1) { // vòng lặp đọc từng ký tự trong PushbackReader
+            // đầu tiên, vì không biết là đang trong comment hay không, nên phải kiểm tra
+            // việc kiểm tra có phải trong comment hay không ta để cho else giải quyết
+            // lệnh if chỉ kiểm tra nếu đúng là trong comment, thì xem xét có kết thúc comment chưa
+            if (inComment) { // nếu đang trong comment
+                if (currentChar == '\n') { // nếu kết thúc comment
+                    stringBuilder.append((char) currentChar); // nối ký tự kết thúc vào StringBuilder
+                    inComment = false; // đánh dấu không đang trong comment
+                } else { // chưa kết thúc comment, tiếp tục lặp và không có thao tác với currentChar
+                    continue;
+                }
+            } else { // không đang trong comment
+                if (currentChar == '-') { // nếu currentChar là '-'
+                    int nextChar = pushbackReader.read(); // đọc nextChar
+                    if (nextChar == '-') { // nếu nextChar cũng là '-'
+                        inComment = true; // đánh dấu đang trong comment
+                    } else { // nếu nextChar không phải là '-'
+                        stringBuilder.append((char) currentChar); // nối currentChar vào StringBuilder
+                        pushbackReader.unread(nextChar); // đẩy ngược nextChar trở lại
+                    }
+                } else { // nếu currentChar không phải là '-'
+                    stringBuilder.append((char) currentChar); // nối currentChar vào StringBuilder
+                }
+            }
+        }
+
+        pushbackReader.close();
+        System.out.println(stringBuilder.toString());
+    }
+}
+```
+* OUTPUT
+```text
+3 + 5 = 8 
+100 - 10 = 90 
+
+2 * 3 = 6
+
+200 / 20 = 10
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 12. BufferedWriter <a id="12"></a>
