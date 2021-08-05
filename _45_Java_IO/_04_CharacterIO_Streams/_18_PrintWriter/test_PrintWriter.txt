@@ -1,0 +1,5 @@
+# File create on Sunday, August 2021 22:58:24 
+
+Employee Name: Jack
+Hire date: 31.12.2021 
+Salary: $1,000 

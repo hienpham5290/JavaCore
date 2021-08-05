@@ -33,10 +33,10 @@ ________________________________________________________________________________
 14. [LineNumberReader](#14)
 15. [StringWriter](#15)
 16. [StringReader](#16)
-17. [PipedWriter](#17)
-18. [PipedReader](#18)
-19. [PrintWriter](#19)
-20. [PrintStream](#20)
+17. [PipedWriter & PipedReader](#17)
+18. [PrintWriter](#18)
+19. [PrintStream](#19)
+20. [StreamTokenizer](#20)
 
 __________________________________________________________________________________________________________________________________________________________________________________
 
@@ -113,16 +113,16 @@ public abstract class Writer extends Object implements Appendable, Closeable, Fl
     public abstract void close() throws IOException;
 
     public static Writer nullWriter() { // ...}
+        
+    public void write(int c) throws IOException { // ...}
+    public void write(char cbuf[]) throws IOException { // ...}
+    public void write(String str) throws IOException { // ...} 
+    public void write(String str, int off, int len) throws IOException { // ...}
 
-        public void write(int c) throws IOException { // ...}
-            public void write(char cbuf[]) throws IOException { // ...}
-                public void write(String str) throws IOException { // ...} 
-                    public void write(String str, int off, int len) throws IOException { // ...}
-
-                        public Writer append(CharSequence csq) throws IOException { // ...}
-                            public Writer append(CharSequence csq, int start, int end) throws IOException { // ...}
-                                public Writer append(char c) throws IOException { // ...}         
-                                }
+    public Writer append(CharSequence csq) throws IOException { // ...}
+    public Writer append(CharSequence csq, int start, int end) throws IOException { // ...}
+    public Writer append(char c) throws IOException { // ...}         
+}
 ```
 __________________________________________________________________________________________________________________________________________________________________________________
 
@@ -455,16 +455,16 @@ public abstract class Reader extends Object implements Readable, Closeable {
         public abstract void close() throws IOException;
 
         public int read(java.nio.CharBuffer target) throws IOException {//...}
-            public int read() throws IOException {//...}
-                public int read(char cbuf[]) throws IOException {//...}
+        public int read() throws IOException {//...}
+        public int read(char cbuf[]) throws IOException {//...}
 
-                    public boolean ready() throws IOException {//...}
-                        public boolean markSupported() {//...}
-                            public void mark(int readAheadLimit) throws IOException {//...}
-                                public void reset() throws IOException {//...}
-                                    public long skip(long n) throws IOException {//...}
-                                        public long transferTo(Writer out) throws IOException {//...}
-                                        }
+        public boolean ready() throws IOException {//...}
+        public boolean markSupported() {//...}
+        public void mark(int readAheadLimit) throws IOException {//...}
+        public void reset() throws IOException {//...}
+        public long skip(long n) throws IOException {//...}
+        public long transferTo(Writer out) throws IOException {//...}
+}
 ```
 __________________________________________________________________________________________________________________________________________________________________________________
 
@@ -2277,36 +2277,16 @@ ________________________________________________________________________________
 package java.io;
  
 public abstract class FilterReader extends Reader {
-    protected Reader in;
-  
-    protected FilterReader(Reader in) {
-        super(in);
-        this.in = in;
-    }
-    public int read() throws IOException {
-        return in.read();
-    }
-    public int read(char cbuf[], int off, int len) throws IOException {
-        return in.read(cbuf, off, len);
-    }
-    public long skip(long n) throws IOException {
-        return in.skip(n);
-    }  
-    public boolean ready() throws IOException {
-        return in.ready();
-    }
-    public boolean markSupported() {
-        return in.markSupported();
-    }
-    public void mark(int readAheadLimit) throws IOException {
-        in.mark(readAheadLimit);
-    }
-    public void reset() throws IOException {
-        in.reset();
-    }
-    public void close() throws IOException {
-        in.close();
-    }
+    protected FilterReader(Reader in) {//...}
+        
+    public int read() throws IOException {//...}
+    public int read(char cbuf[], int off, int len) throws IOException {//...}
+    public long skip(long n) throws IOException {//...}
+    public boolean ready() throws IOException {//...}
+    public boolean markSupported() {//...}
+    public void mark(int readAheadLimit) throws IOException {//...}
+    public void reset() throws IOException {//...}
+    public void close() throws IOException {//...}
 }
 ```
 ### FilterReader Constructor
@@ -3073,20 +3053,2582 @@ lineNum: 7 - EEEEE
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 15. StringWriter <a id="15"></a>
+* **StringWriter** là 1 **subclass** của **Writer**
+* **StringWriter** quản lý 1 đối tượng **StringBuffer** bên trong nó, các ký tự được ghi vào **StringWriter** sẽ được nối (append) vào **StringBuffer** mà nó quản lý
+
+![img_41.png](img_41.png)
+
+* **StringWriter** không sử dụng các hoạt động **I/O** (input/output stream) hoặc **NetWork** (mạng) vì vậy bạn có thể sử dụng nó mà không cần đóng nó lại
+```java
+public class StringWriter extends Writer {
+    public StringWriter() {//...}
+    public StringWriter(int initialSize) {//...}
+
+    public void write(int c) {//...}
+    public void write(char cbuf[], int off, int len) {//...}
+    public void write(String str) {//...}
+    public void write(String str, int off, int len) {//...}
+    public StringWriter append(CharSequence csq) {//...}
+    public StringWriter append(CharSequence csq, int start, int end) {//...}
+    public StringWriter append(char c) {//...}
+    public String toString() {//...}
+    public StringBuffer getBuffer() {//...}
+    public void flush() {//...}
+    public void close() throws IOException {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringWriter Constructors
+```java
+public class StringWriter extends Writer {
+    public StringWriter() {//...}
+    public StringWriter(int initialSize) {//...}
+}
+```
+
+Constructor                    |Description
+:------------------------------|:-----------------------------------------------------------------
+StringWriter()                 |tạo 1 đối tượng **StringWriter** với **StringBuffer** có kích thước mặc định
+StringWriter(int initialSize)  |tạo 1 đối tượng **StringWriter** với **StringBuffer** có kích thước chỉ định <br/>``initialSize`` : kích thước chỉ định của **StringBuffer**
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringWriter Methods
+```java
+public class StringWriter extends Writer {
+    public void write(int c) {//...}
+    public void write(char cbuf[], int off, int len) {//...}
+    public void write(String str) {//...}
+    public void write(String str, int off, int len) {//...}
+    public StringWriter append(CharSequence csq) {//...}
+    public StringWriter append(CharSequence csq, int start, int end) {//...}
+    public StringWriter append(char c) {//...}
+    public String toString() {//...}
+    public StringBuffer getBuffer() {//...}
+    public void flush() {//...}
+    public void close() throws IOException {//...}
+}
+```
+
+Return Data   |Method                                      |Description
+:-------------|:-------------------------------------------|:----------------------------------------------------------------
+void          |write(int c)                                |ghi 1 ký tự vào **string-buffer** mà **StringWriter** quản lý
+void          |write(char cbuf[], int off, int len)        |ghi 1 phần của mảng ký tự chỉ định ``cbuf`` từ vị trí ``off`` đến vị trí ``off + len`` vào **string-buffer**
+void          |write(String str)                           |ghi 1 String chỉ định vào **string-buffer**
+void          |write(String str, int off, int len)         |ghi 1 phần của String chỉ định ``str`` từ vị trí ``off`` đến vị trí ``off + len`` vào **string-buffer**
+StringWriter  |append(CharSequence csq)                    |nối 1 **CharSequence** chỉ định vào **string-buffer** và trả về 1 **StringWriter** <br/>``csq`` : **CharSequence** chỉ định
+StringWriter  |append(CharSequence csq, int start, int end)|nối 1 phần của **CharSequence** chỉ định ``csq`` từ vị trí ``start`` đến vị trí kết thúc nối ký tự ``end`` vào **string-buffer**, trả vể ` **StringWriter** <br/>``csq`` : **CharSequence** chỉ định <br/>``start`` : vị trí bắt đầu lấy ký tự để nối <br/>``end`` : vị trí kết thúc không lấy ký tự
+StringWriter  |append(char c)                              |nối 1 ký tự chỉ định ``c`` vào **string-buffer**
+String        |toString()                                  |trả về 1 String từ **string-buffer** mà **StringWriter** quản lý
+StringBuffer  |getBuffer()                                 |trả về **StringBuffer** mà **StringWriter** quản lý 
+void          |flush()                                     |xả stream
+void          |close()                                     |đóng stream
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringWriter.append()
+```java
+import java.io.StringWriter;
+
+public class StringWriter_append {
+    public static void main(String[] args) {
+        StringWriter stringWriter = new StringWriter();
+
+        stringWriter.write("Java Tutorials");
+        stringWriter.append("\n").append("C# Tutorials").append("\n").append("Python Tutorials");
+
+        String s = stringWriter.toString();
+
+        System.out.println(s);
+    }
+}
+```
+* OUTPUT
+```text
+Java Tutorials
+C# Tutorials
+Python Tutorials
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringWriter với Stack-Trace
+* thông thường khi 1 **Exception** xảy ra, ta thường thấy thông tin **Stack-Trace** được in ra màn hình **console**, làm sao để có được nội dung này như 1 String
+```java
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+public class StringWriter_printStackTrace {
+    public static void main(String[] args) {
+        try {
+            int a = 100 / 0; // Exception occur here
+        } catch (Exception e) {
+            String s = getStackTrace(e);
+            System.out.println(s);
+        }
+    }
+
+
+    private static String getStackTrace(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+
+        throwable.printStackTrace(printWriter);
+
+        printWriter.close();
+
+        String s = stringWriter.getBuffer().toString();
+
+        return s;
+    }
+}
+```
+* OUTPUT
+```text
+java.lang.ArithmeticException: / by zero
+	at _45_Java_IO._04_CharacterIO_Streams._15_StringWriter.StringWriter_printStackTrace.main(StringWriter_printStackTrace.java:9)
+
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
 ## 16. StringReader <a id="16"></a>
+* **StringReader** là 1 **subclass** của **Reader**, nó được sử dụng để đọc 1 **String** theo phong cách của 1 **character input stream**
+* **StringReader** không có bất kỳ phương thức nào của riêng nó, mà chỉ ghi đè các phương thức của lớp cha là **Reader**
+```java
+public class StringReader extends Reader {
+  public StringReader(String s) {//...}
+
+  private void ensureOpen() throws IOException {//...}
+  public int read() throws IOException {//...}
+  public int read(char cbuf[], int off, int len) throws IOException {//...}
+  public long skip(long ns) throws IOException {//...}
+  public boolean ready() throws IOException {//...}
+  public boolean markSupported() {//...}
+  public void mark(int readAheadLimit) throws IOException {//...}
+  public void reset() throws IOException {//...}
+  public void close() {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringReader Constructor
+```java
+public class StringReader extends Reader {
+  public StringReader(String s) {//...}
+}
+```
+
+Constructor            |Description
+:----------------------|:-----------------------------------------------------------------------------------------------------
+StringReader(String s) |tạo 1 đối tượng **StringReader** với nội dung là String ``s`` chỉ định
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringReader với StreamTokenizer
+* đọc 1 văn bản, liệt kê danh sách các chữ xuất hiện trong văn bản, và số lần xuất hiện của mỗi chữ
+```java
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+public class StringReader_with_StreamTokenizer {
+    public static void main(String[] args) throws IOException {
+        String s = "Apple Apricots Apricots Blackberries Apple";
+
+        StringReader stringReader = new StringReader(s);
+
+        StreamTokenizer streamTokenizer = new StreamTokenizer(stringReader);
+
+        Map<String, Integer> wordMap = new HashMap<>();
+
+        while (streamTokenizer.nextToken() != StreamTokenizer.TT_EOF) {
+            if (streamTokenizer.ttype == StreamTokenizer.TT_WORD) {
+                int count;
+
+                if (wordMap.containsKey(streamTokenizer.sval)) {
+                    count = wordMap.get(streamTokenizer.sval).intValue();
+                    count++;
+                } else {
+                    count = 1;
+                }
+                wordMap.put(streamTokenizer.sval, count);
+            }
+        }
+
+        wordMap.forEach((word, count) -> {
+            System.out.println(word + " : " + count);
+        });
+    }
+}
+```
+* OUTPUT
+```text
+Apple : 2
+Apricots : 2
+Blackberries : 1
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### StringReader với BufferedReader
+* đọc 1 đoạn văn, loại bỏ những dòng bắt đầu với ký tự ``#``, chỉ in những dòng kết thúc với ký tự ``B``
+```java
+import java.io.BufferedReader;
+import java.io.StringReader;
+
+public class StringReader_with_BufferedReader {
+    public static void main(String[] args) {
+        String students = //
+                "# Students:\n" //
+                        + "John P\n" //
+                        + "Sarah M\n" //
+                        + "# Sarah B\n" //
+                        + "Charles B\n" //
+                        + "Mary T\n" //
+                        + "Sophia B\n";
+
+        StringReader stringReader = new StringReader(students);
+        BufferedReader bufferedReader = new BufferedReader(stringReader);
+
+        bufferedReader.lines()
+                .filter(s -> !s.trim().startsWith("#"))
+                .filter(s -> s.endsWith("B"))
+                .forEach(System.out::println);
+    }
+}
+```
+* OUTPUT
+```text
+Charles B
+Sophia B
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
-## 17. PipedWriter <a id="17"></a>
+## 17. PipedWriter & PipedReader<a id="17"></a>
+* giả sử ta đang phát triển 1 ứng dung **MultiThreading** (đa luồng), và ta có 2 **Thread** độc lập là **Thread A** và **Thread B**, câu hỏi đặt ra là:
+  * cần làm gì để mỗi khi ký tự xuất hiện trên **Thread A** chúng sẽ được chuyển sang **Thread B** 1 cách tự động
+
+![img_42.png](img_42.png)
+
+* **PipedWriter** & **PipedReader** được tạo ra để có thể giải quyết tình huống trên, mỗi khi dữ liệu được ghi vào **PipedWriter** chúng sẽ được tự động xuất hiện trên 
+**PipedReader**
+
+![img_43.png](img_43.png)
+
 __________________________________________________________________________________________________________________________________________________________________________________
 
-## 18. PipedReader <a id="18"></a>
+### PipedWriter
+* **PipedWriter** là 1 **subclass** của **Writer**, dùng để ghi các ký tự vào stream để **PipedReader** đọc
+```java
+public class PipedWriter extends Writer {
+  public PipedWriter(PipedReader snk)  throws IOException {//...}
+  public PipedWriter() {//...}
+
+  public synchronized void connect(PipedReader snk) throws IOException {//...}
+  public void write(int c)  throws IOException {//...}
+  public void write(char cbuf[], int off, int len) throws IOException {//...}
+  public synchronized void flush() throws IOException {//...}
+  public void close()  throws IOException {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PipedReader
+* **PipedReader** là 1 **subclass** của **Reader**, dùng để đọc các ký tự được ghi vào stream bởi **PipedWriter**
+```java
+public class PipedReader extends Reader {
+  public PipedReader(PipedWriter src) throws IOException {//...}
+  public PipedReader(PipedWriter src, int pipeSize) throws IOException {//...}
+  public PipedReader() {//...}
+  public PipedReader(int pipeSize) {//...}
+
+  private void initPipe(int pipeSize) {//...}
+  public void connect(PipedWriter src) throws IOException {//...}
+  synchronized void receive(int c) throws IOException {//...}
+  synchronized void receive(char c[], int off, int len)  throws IOException {//...}
+  synchronized void receivedLast() {//...}
+  public synchronized int read()  throws IOException {//...}
+  public synchronized int read(char cbuf[], int off, int len)  throws IOException {//...}
+  public synchronized boolean ready() throws IOException {//...}
+  public void close()  throws IOException {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PipedWriter & PipedReader Example 1
+```java
+import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+
+public class PipedWriter_PipedReader_Ex1 {
+    private PipedWriter pipedWriter;
+    private PipedReader pipedReader;
+
+    public static void main(String[] args) throws IOException {
+        new PipedWriter_PipedReader_Ex1().test();
+    }
+
+    private void test() throws IOException {
+        pipedWriter = new PipedWriter();
+        pipedReader = new PipedReader();
+
+        pipedReader.connect(pipedWriter);
+
+        new Thread_A().start();
+        new Thread_B().start();
+    }
+
+    private class Thread_A extends Thread {
+        @Override
+        public void run() {
+            try {
+                String s = "abcdefghijklmnopqrtvuwxyz";
+                char[] chars = s.toCharArray();
+
+                for (char c : chars) {
+                    pipedWriter.write(c);
+                    Thread.sleep(1000);
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    closeQuietly(pipedWriter);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class Thread_B extends Thread {
+        @Override
+        public void run() {
+            try {
+                int charCode;
+                while ((charCode = pipedReader.read()) != -1) {
+                    System.out.println((char) charCode);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    closeQuietly(pipedReader);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void closeQuietly(PipedWriter pipedWriter) throws IOException {
+        if (pipedWriter != null) {
+            try {
+                pipedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void closeQuietly(PipedReader pipedReader) {
+        if (pipedReader != null) {
+            try {
+                pipedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### Sử dụng PipedWriter và PipedReader kết hợp BufferedWriter và BufferedReader nâng cao hiệu suất chương trình
+```java
+import java.io.*;
+
+public class PipedWriter_PipedReader_BufferedWriter_BufferedReader {
+    private BufferedWriter bufferedWriter;
+    private BufferedReader bufferedReader;
+    private PipedWriter pipedWriter;
+    private PipedReader pipedReader;
+
+    public static void main(String[] args) throws IOException {
+        new PipedWriter_PipedReader_BufferedWriter_BufferedReader().test();
+    }
+
+    private void test() throws IOException {
+        pipedWriter = new PipedWriter();
+        pipedReader = new PipedReader(pipedWriter);
+
+        this.bufferedWriter = new BufferedWriter(pipedWriter);
+        this.bufferedReader = new BufferedReader(pipedReader);
+
+        new ThreadA().start();
+        new ThreadB().start();
+    }
+
+    private class ThreadA extends Thread {
+        @Override
+        public void run() {
+            try {
+                String[] texts = new String[]{"One\nTwo\n", "Three\nFour\n", "Five"};
+                for (String s : texts) {
+                    bufferedWriter.write(s);
+                    bufferedWriter.flush();
+                    Thread.sleep(1000);
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    closeQuietly(bufferedWriter);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void closeQuietly(Writer bufferedWriter) throws IOException {
+        if (bufferedWriter != null) {
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class ThreadB extends Thread {
+        @Override
+        public void run() {
+            try {
+                String s;
+                while ((s = bufferedReader.readLine()) != null) {
+                    System.out.println(s);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                closeQuietly(bufferedReader);
+            }
+        }
+    }
+
+    private void closeQuietly(Reader bufferedReader) {
+        if (bufferedReader != null) {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
-## 19. PrintWriter <a id="19"></a>
+## 18. PrintWriter <a id="18"></a>
+* **PrintWriter** là 1 **subclass** của **Writer**, nó được sử dụng để **in** hoặc **ghi** các dữ liệu có định dạng vào 1 **OutputStream** hoặc 1 **Writer** khác mà nó quản lý
+* **PrintWriter** được dùng để in các biểu diễn đã được định dạng của các đối tượng vào **text output stream** (luồng đầu ra văn bản), nó không chứa các phương thức cho việc 
+ghi các byte thô, cho 1 chương trình mà chương trình đó nên sử dụng **unencoded bytes stream**
+* **PrintWriter** triển khai các phương thức **print(), println()** có thể được tìm thấy ở **PrintStream**
+* **PrintWriter** không giống như **PrintStream**, nếu **automatic flushing** được bật (``true``), thì hành động **flush** sẽ được thực hiện khi 1 trong các phương thức **print(), printlnt(), format()** được gọi
+thay vì bất cứ khi nào 1 ký tự **newline** được xuất ra, các phương thức này sử dụng khái niệm riêng của nền ký tự **tách dòng** thay vì ký tự **newline** 
+```java
+public class PrintWriter extends Writer {
+  private static Charset toCharset(String csn) throws UnsupportedEncodingException {//...}
+  private PrintWriter(Charset charset, File file) throws FileNotFoundException {//...}
+    
+  public PrintWriter (Writer out) {//...}
+  public PrintWriter(Writer out, boolean autoFlush) {//...}
+  public PrintWriter(OutputStream out) {//...}
+  public PrintWriter(OutputStream out, boolean autoFlush) {//...}
+  public PrintWriter(OutputStream out, boolean autoFlush, Charset charset) {//...}
+  public PrintWriter(String fileName) throws FileNotFoundException {//...}
+  public PrintWriter(String fileName, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintWriter(String fileName, Charset charset) throws IOException {//...}
+  public PrintWriter(File file) throws FileNotFoundException {//...}
+  public PrintWriter(File file, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintWriter(File file, Charset charset) throws IOException  {//...}
+
+  private void ensureOpen() throws IOException {//...}
+      
+  public void flush() {//...}
+  public void close() {//...}
+      
+  public boolean checkError() {//...}
+  protected void setError() {//...}
+  protected void clearError() {//...}
+      
+  public void write(int c) {//...}
+  public void write(char buf[], int off, int len) {//...}
+  public void write(char buf[]) {//...}
+  public void write(String s, int off, int len) {//...}
+  public void write(String s) {//...}
+      
+  public void print(boolean b) {//...}
+  public void print(char c) {//...}
+  public void print(int i) {//...}
+  public void print(long l) {//...}
+  public void print(float f) {//...}
+  public void print(double d) {//...}
+  public void print(char s[]) {//...}
+  public void print(String s) {//...}
+  public void print(Object obj) {//...}
+      
+  public void println() {//...}
+  public void println(boolean x) {//...}
+  public void println(char x) {//...}
+  public void println(int x) {//...}
+  public void println(long x) {//...}
+  public void println(float x) {//...}
+  public void println(double x) {//...}
+  public void println(char x[]) {//...}
+  public void println(String x) {//...}
+  public void println(Object x) {//...}
+      
+  public PrintWriter printf(String format, Object ... args) {//...}
+  public PrintWriter printf(Locale l, String format, Object ... args) {//...}
+      
+  public PrintWriter format(String format, Object ... args) {//...}
+  public PrintWriter format(Locale l, String format, Object ... args) {//...}
+      
+  public PrintWriter append(CharSequence csq) {//...}
+  public PrintWriter append(CharSequence csq, int start, int end) {//...}
+  public PrintWriter append(char c) {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintWriter Constructors
+* có khá nhiều **Constructors** để khởi tạo 1 đối tượng **PrintWriter**, chúng ta hãy xem điều gì sẽ xảy ra khi tạo 1 **PrintWriter** trong 1 vài tình huống cụ thể
+
+#### PrintWriter(Writer)
+* tạo 1 đối tượng **PrintWriter** để in dữ liệu có định dạng vào 1 **Writer** khác
+
+![img_44.png](img_44.png)
+
+#### PrintWriter(OutputStream)
+* tạo 1 đối tượng **PrintWriter** để in dữ liệu có định dạng vào 1 **OutputStream**
+
+![img_45.png](img_45.png)
+
+#### PrintWriter(File file) / PrintWriter(String fileName)
+* tạo 1 đối tượng **PrintWriter** để in dữ liệu có định dạng vào 1 **File**
+
+![img_46.png](img_46.png)
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### Các đặc điểm của PrintWriter
+* tất cả các method của **PrintWriter** đều không ném ra **exception I/O**, mặc dù 1 vài **Constructor** của nó có thể ném ra **exception**, để kiểm tra **exception** có xảy 
+ra hay không, ta có thể gọi method **PrintWriter.checkError()**
+* nếu **BufferedWriter** tham gia vào cấu trúc của **PrintWriter** dữ liệu sẽ được ghi tạm thời vào **buffer** (của **BufferedWriter**), dữ liệu sẽ được đẩy xuống mục tiêu
+khi (Target) khi **buffer** đầy, ta có thể chủ động đẩy dữ liệu xuống mục tiêu bằng cách gọi phương thức **PrintWriter.flush()** 
+* nếu **PrintWriter** được tạo ra với tính năng **autoFlush** được bật (``true``), dữ liệu sẽ được đẩy xuống mục tiêu mỗi khi gọi phương thức **PrintWriter.println(...)** hoặc
+**PrintWriter.format(...)**
+
+Constructor                                                       |Description
+:-----------------------------------------------------------------|:------------------------------------------------------------------------------------------------
+PrintWriter(Writer out)                                          |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **Writer** chỉ định <br/>``out`` : **Writer** chỉ định
+PrintWriter(Writer out, boolean autoFlush)                        |tạo 1 đối tượng **PrintWriter** sẽ **flush** tự động nếu ``autoFlush = true``, với **Writer** chỉ định <br/>``out`` : **Writer** chỉ định <br/>``autoFlush`` : giá trị **boolean**, nếu ``true`` phương thức **print(), println(), format()** sẽ **flush** **buffer** đầu ra khi được gọi 
+PrintWriter(OutputStream out)                                     |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **File** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** mặc định cho **instance** này <br/>``out`` : **OutputStream** chỉ định
+PrintWriter(OutputStream out, boolean autoFlush)                  |tạo 1 đối tượng **PrintWriter** sẽ **flush** tự động nếu ``autoFlush = true``, với **OutputStream** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** mặc định cho **instance** này <br/>``out`` : **OutputStream** chỉ định <br/>``autoFlush`` : giá trị **boolean**, nếu ``true`` phương thức **print(), println(), format()** sẽ **flush** **buffer** đầu ra khi được gọi
+PrintWriter(OutputStream out, boolean autoFlush, Charset charset) |tạo 1 đối tượng **PrintWriter** sẽ **flush** tự động nếu ``autoFlush = true``, với **OutputStream** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **Charset** cung cấp cho **instance** này <br/>``out`` : **OutputStream** chỉ định <br/>``autoFlush`` : giá trị **boolean**, nếu ``true`` phương thức **print(), println(), format()** sẽ **flush** **buffer** đầu ra khi được gọi <br/>``charset`` : **Charset** chỉ định
+PrintWriter(String fileName)                                      |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **File** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** mặc định cho **instance** này <br/>``fileName`` : tên đường dẫn của **File** mục tiêu
+PrintWriter(String fileName, String csn)                          |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với đường dẫn đến tên **File** và tên **charset** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** cung cấp cho **instance** này <br/>``fileName`` : tên đường dẫn của **File** mục tiêu <br/>``csn`` : charset name, tên của bộ **charset** chỉ định
+PrintWriter(String fileName, Charset charset)                     |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với đường dẫn đến tên **File** và **Charset** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **Charset** cung cấp cho **instance** này <br/>``fileName`` : tên đường dẫn của **File** mục tiêu <br/>``charset`` : **Charset** chỉ định
+PrintWriter(File file)                                            |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **File** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** mặc định cho **instance** này <br/>``file`` : **File** mục tiêu
+PrintWriter(File file, String csn)                                |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **File** và tên **charset** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **charset** cung cấp cho **instance** này <br/>``file`` : **File** mục tiêu <br/>``csn`` : charset name, tên của bộ **charset** chỉ định
+PrintWriter(File file, Charset charset)                           |tạo 1 đối tượng **PrintWriter** không **flush** tự động, với **File** và **Charset** chỉ định, **constructor** này sẽ tạo 1 đối tượng vô danh của **OutputStreamWriter**, **OutputStreamWriter** này sẽ mã hóa các ký tự bằng việc sử dụng **Charset** cung cấp cho **instance** này <br/>``file`` : **File** mục tiêu <br/>``charset`` : **Charset** chỉ định
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintWriter Methods
+
+AccessModifier  |ReturnData   |Method                                           |Description
+:---------------|:------------|:------------------------------------------------|:----------------------------------------------------------------------------------------------------------
+private         |void         |ensureOpen()                                     |
+     -          |-            |-                                                |-
+public          |void         |flush()                                          |flush stream
+public          |void         |close()                                          |close stream
+     -          |-            |-                                                |-
+public          |boolean      |checkError()                                     |flush stream nếu stream không được đóng và kiểm tra trạng thái **Error** của stream <br/>return ``true`` nếu print stream gặp error, trên output stream bên dưới hoặc trong quá trình chuyển đổi định dạng
+protected       |void         |setError()                                       |trình bày 1 error đã xảy ra, khi method này được thực hiện, các lệnh **checkError()** sau đó sẽ trả về ``true`` cho đến khi method **clearError()** được thực hiện mới trả về ``false``
+protected       |void         |clearError()                                     |xóa trạng thái **Error** của stream, phương thức này dẫn đến các lệnh **checkError()** sau đó sẽ trả về ``false`` cho đến khi 1 hoạt động ghi khác bị lỗi và **setError()** được gọi
+     -          |-            |-                                                |-
+public          |void         |write(int c)                                     |ghi 1 ký tự vào **PrintWriter** <br/>``c`` : ký tự chỉ định
+public          |void         |write(char buf[], int off, int len)              |ghi 1 phần của mảng ký tự chỉ định vào **PrintWriter** <br/>``buf`` : mảng ký tự chỉ định <br/>``off`` : vị trí bắt đầu lấy ký tự ghi<br/>``len`` : số lượng ký tự lấy để ghi
+public          |void         |write(char buf[])                                |ghi mảng ký tự chỉ định vào **PrintWriter** <br/>``buf`` : mảng ký tự chỉ định
+public          |void         |write(String s, int off, int len)                |ghi 1 phần của chuỗi chỉ định vào **PrintWriter** <br/>``s`` : chuỗi chỉ định <br/>``off`` : vị trí bắt đầu lấy ký tự để ghi <br/>``len`` : số lượng lấy ký tự để ghi
+public          |void         |write(String s)                                  |ghi chuỗi chỉ định vào **PrintWriter** <br/>``s`` : chuỗi chỉ định
+     -          |-            |-                                                |-
+public          |void         |print(boolean b)                                 |in 1 giá trị **boolean** ``b`` vào **PrintWriter**
+public          |void         |print(char c)                                    |in 1 giá trị **char** ``c`` vào **PrintWriter** 
+public          |void         |print(int i)                                     |in 1 giá trị **int** ``i`` vào **PrintWriter**
+public          |void         |print(long l)                                    |in 1 giá trị **long** ``l`` vào **PrintWriter**
+public          |void         |print(float f)                                   |in 1 giá trị **float** ``f`` vào **PrintWriter**
+public          |void         |print(double d)                                  |in 1 giá trị **double** ``d`` vào **PrintWriter**
+public          |void         |print(char s[])                                  |in 1 mảng **char** ``s`` vào **PrintWriter**
+public          |void         |print(String s)                                  |in 1 chuỗi **String** ``s`` vào **PrintWriter**
+public          |void         |print(Object obj)                                |in 1 đối tượng **Object** ``obj`` vào **PrintWriter**
+     -          |-            |-                                                |-
+public          |void         |println()                                        |in 1 ký tự cấp dòng mới ``\n`` hoặc ``\r`` vào **PrintWriter**
+public          |void         |println(boolean x)                               |in 1 giá trị **boolean** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(char x)                                  |in 1 giá trị **char** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(int x)                                   |in 1 giá trị **int** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(long x)                                  |in 1 giá trị **long** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(float x)                                 |in 1 giá trị **float** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(double x)                                |in 1 giá trị **double** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(char x[])                                |in 1 mảng **char** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(String x)                                |in 1 chuỗi **String** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+public          |void         |println(Object x)                                |in 1 **Object** ``x`` sau đó là ký tự cấp dòng mới vào **PrintWriter**
+     -          |-            |-                                                |-
+public          |PrintWriter  |printf(String format, Object ... args)           |in 1 chuỗi được định dạng vào **PrintWriter** bằng cách sử dụng chuỗi định dạng chỉ định và các đối số với **Locale** định dạng khu vực ngôn ngữ **mặc định**<br/>trả về kết quả cho **PrintWriter** <br/>``format`` : chuỗi định dạng chỉ định được mô tả trong **Format string syntax** <br/>``args`` : các đối số (agruments) chỉ định được phân cách bởi dấu ``,`` nếu có nhiều hơn 1 đối số
+public          |PrintWriter  |printf(Locale l, String format, Object ... args) |in 1 chuỗi được định dạng vào **PrintWriter** bằng cách sử dụng chuỗi định dạng chỉ định và các đối số với **Locale** ``l`` định dạng khu vực ngôn ngữ **chỉ định**<br/>``l`` : **Locale** chỉ định <br/>``format`` : chuỗi định dạng chỉ định được mô tả trong **Format string syntax** <br/>``agrs`` : các đối số (agruments) chỉ định được phân cách bởi dấu ``,`` nếu có nhiều hơn 1 đối số
+     -          |-            |-                                                |-
+public          |PrintWriter  |format(String format, Object ... args)           |in 1 chuỗi được định dạng vào **PrintWriter** bằng cách sử dụng chuỗi định dạng chỉ định và các đối số với **Locale** định dạng khu vực ngôn ngữ **mặc định**<br/>trả về kết quả cho **PrintWriter** <br/>``format`` : chuỗi định dạng chỉ định được mô tả trong **Format string syntax** <br/>``args`` : các đối số (agruments) chỉ định được phân cách bởi dấu ``,`` nếu có nhiều hơn 1 đối số
+public          |PrintWriter  |format(Locale l, String format, Object ... args) |in 1 chuỗi được định dạng vào **PrintWriter** bằng cách sử dụng chuỗi định dạng chỉ định và các đối số với **Locale** ``l`` định dạng khu vực ngôn ngữ **chỉ định**<br/>``l`` : **Locale** chỉ định <br/>``format`` : chuỗi định dạng chỉ định được mô tả trong **Format string syntax** <br/>``agrs`` : các đối số (agruments) chỉ định được phân cách bởi dấu ``,`` nếu có nhiều hơn 1 đối số
+     -          |-            |-                                                |-
+public          |PrintWriter  |append(CharSequence csq)                         |nối chuỗi **CharSequence** ``csq`` chỉ định vào **PrintWriter**
+public          |PrintWriter  |append(CharSequence csq, int start, int end)     |nối 1 phần chuỗi **CharSequence** ``csq`` chỉ định vào **PrintWriter** <br/>``start`` : vị trí bắt đầu nối <br/>``end`` : vị trí kết thúc nối
+public          |PrintWriter  |append(char c)                                   |nối 1 ký tự **char** ``c`` chỉ định vào **PrintWriter**
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintWriter Example 1
+* ghi thông tin của 1 nhân viên vào **PrintWriter**, sử dụng các định dạng cho các đối số
+```java
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Locale;
+
+public class PrintWriter_Ex1 {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_18_PrintWriter\\test_PrintWriter.txt";
+
+    public static void main(String[] args) throws FileNotFoundException {
+        PrintWriter printWriter = new PrintWriter(path);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        String employeeName = "Jack";
+        LocalDate hireDate = LocalDate.of(2021, 12, 31);
+        int salary = 1000;
+
+        printWriter.printf("# File create on %1$tA, %1$tB %1$tY %tH:%tM:%tS %n", now, now, now);
+
+        printWriter.println();
+
+        printWriter.printf("Employee Name: %s%n", employeeName);
+        printWriter.printf("Hire date: %1$td.%1$tm.%1$tY %n", hireDate);
+        printWriter.printf(Locale.US, "Salary: $%,d %n", salary);
+
+        printWriter.close();
+    }
+}
+```
+* OUTPUT
+
+![img_47.png](img_47.png)
+
 __________________________________________________________________________________________________________________________________________________________________________________
 
-## 20. PrintStream <a id="20"></a>
+## 19. PrintStream (bổ sung kiến thức ByteStream) <a id="19"></a>
+* **PrintStream** là 1 **subclass** của **FilterOutputStream**, nó bổ sung chức năng cho **output stream** khác mà nó quản lý có khả năng in các biểu diễn của các giá trị 
+khác nhau 1 cách tiện lợi
+```java
+public class PrintStream extends FilterOutputStream implements Appendable, Closeable {
+  private PrintStream(boolean autoFlush, OutputStream out) {//...}
+  private PrintStream(boolean autoFlush, Charset charset, OutputStream out) {//...}
+  public PrintStream(OutputStream out) {//...}
+  public PrintStream(OutputStream out, boolean autoFlush) {//...}
+  public PrintStream(OutputStream out, boolean autoFlush, String encoding) throws UnsupportedEncodingException {//...}
+  public PrintStream(OutputStream out, boolean autoFlush, Charset charset) {//...}
+  public PrintStream(String fileName) throws FileNotFoundException {//...}
+  public PrintStream(String fileName, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintStream(String fileName, Charset charset) throws IOException {//...}
+  public PrintStream(File file) throws FileNotFoundException {//...}
+  public PrintStream(File file, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintStream(File file, Charset charset) throws IOException {//...}
+
+  private void ensureOpen() throws IOException {//...}
+  private static <T> T requireNonNull(T obj, String message) {//...}
+  private static Charset toCharset(String csn) throws UnsupportedEncodingException {//...}
+
+  public void flush() {//...}
+  public void close() {//...}
+
+  public boolean checkError() {//...}
+  protected void setError() {//...}
+  protected void clearError() {//...}
+
+  public void write(int b) {//...}
+  public void write(byte buf[], int off, int len) {//...}
+  private void write(char buf[]) {//...}
+  private void write(String s) {//...}
+  private void newLine() {//...}
+  
+  public void print(boolean b) {//...}
+  public void print(char c) {//...}
+  public void print(int i) {//...}
+  public void print(long l) {//...}
+  public void print(float f) {//...}
+  public void print(double d) {//...}
+  public void print(char s[]) {//...}
+  public void print(String s) {//...}
+  public void print(Object obj) {//...}
+  
+  public void println() {//...}
+  public void println(boolean x) {//...}
+  public void println(char x) {//...}
+  public void println(int x) {//...}
+  public void println(long x) {//...}
+  public void println(float x) {//...}
+  public void println(double x) {//...}
+  public void println(char x[]) {//...}
+  public void println(String x) {//...}
+  public void println(Object x) {//...}
+
+  public PrintStream printf(String format, Object ... args) {//...}
+  public PrintStream printf(Locale l, String format, Object ... args) {//...}
+  
+  public PrintStream format(String format, Object ... args) {//...}
+  public PrintStream format(Locale l, String format, Object ... args) {//...}
+
+  public PrintStream append(CharSequence csq) {//...}
+  public PrintStream append(CharSequence csq, int start, int end) {//...}
+  public PrintStream append(char c) {//...}
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### Đặc điểm của PrintStream
+* tất cả các phương thức của **PrintStream** không ném ra **exception** **I/O**, để kiểm tra **exception** có xảy ra hay không, ta có thể gọi phương thức 
+**PrintStream.checkError()**
+* theo tùy chọn, **PrintStream** có khả năng tự động **flush** dữ liệu, nghĩa là khi tham số **boolean autoflush = true** được truyền vào, phương thức **flush()** sẽ được 
+gọi ngay sau khi phương thức **print(), println(), format()** được gọi 
+* tất cả các ký tự được in bởi **PrintStream** đều được chuyển đổi thành các **bytes** bằng cách sử dụng **encoding** hoặc **charset** đã cho hoặc mặc định bởi hệ thống (nếu 
+không được chỉ định), nếu không muốn chuyển đổi các ký tự thành các bytes ta nên sử dụng **PrintWriter** thay thế cho **PrintStream**
+
+#### System.out
+* **System.out** là 1 đối tượng kiểu **PrintStream** rất thông dụng và quen thuộc, nó được sử dụng để in dữ liệu ra màn hình console<br/>
+```System.out.println("Hello World !!!);```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream Constructors
+```java
+public class PrintStream extends FilterOutputStream implements Appendable, Closeable {
+
+  private PrintStream(boolean autoFlush, OutputStream out) {//...}
+  private PrintStream(boolean autoFlush, Charset charset, OutputStream out) {//...}
+
+  public PrintStream(OutputStream out) {//...}
+  public PrintStream(OutputStream out, boolean autoFlush) {//...}
+  public PrintStream(OutputStream out, boolean autoFlush, String encoding) throws UnsupportedEncodingException {//...}
+  public PrintStream(OutputStream out, boolean autoFlush, Charset charset) {//...}
+  public PrintStream(String fileName) throws FileNotFoundException {//...}
+  public PrintStream(String fileName, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintStream(String fileName, Charset charset) throws IOException {//...}
+  public PrintStream(File file) throws FileNotFoundException {//...}
+  public PrintStream(File file, String csn) throws FileNotFoundException, UnsupportedEncodingException {//...}
+  public PrintStream(File file, Charset charset) throws IOException {//...}
+}      
+```
+
+AccessModifier  |Method                                                            |Description
+:---------------|:-----------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------
+private         |PrintStream(boolean autoFlush, OutputStream out)                  |
+private         |PrintStream(boolean autoFlush, Charset charset, OutputStream out) |
+-               |-                                                                 |-
+public          |PrintStream(OutputStream out)                                     |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với **OutputStream** chỉ định và sử dụng **charset** mặc định để thực hiện **encode**<br/>``out`` : **OutputStream** chỉ định
+public          |PrintStream(OutputStream out, boolean autoFlush)                  |tạo 1 đối tượng **PrintStream**, với **OutputStream** chỉ định và tùy chọn **autoFlush**, sử dụng **charset** mặc định để thực hiện **encode** <br/>``out`` : **OutputStream** chỉ định <br/>``autoFlush`` : giá trị **boolean** tùy chọn ``true`` hoặc ``false``, nếu ``true`` sẽ tự động **flush** khi **output stream** được ghi, hoặc 1 trong các phương thức **println()** được gọi, hoặc 1 ký tự cấp dòng ``\n`` được ghi vào stream 
+public          |PrintStream(OutputStream out, boolean autoFlush, String encoding) |tạo 1 đối tượng **PrintStream**, với **OutputStream** chỉ định, tùy chọn **autoFlush** và sử dụng **charset** chỉ định để thực hiện **encode** <br/>``out`` : **OutputStream** chỉ định <br/>``autoFlush`` : : giá trị **boolean** tùy chọn ``true`` hoặc ``false``, nếu ``true`` sẽ tự động **flush** khi **output stream** được ghi, hoặc 1 trong các phương thức **println()** được gọi, hoặc 1 ký tự cấp dòng ``\n`` được ghi vào stream <br/>``encoding`` : tên **charset** chỉ định để thực hiện **encoding** các ký tự vào stream
+public          |PrintStream(OutputStream out, boolean autoFlush, Charset charset) |tạo 1 đối tượng **PrintStream**, với **OutputStream** chỉ định, tùy chọn **autoFlush** và sử dụng **charset** chỉ định để thực hiện **encode** <br/>``out`` : **OutputStream** chỉ định <br/>``autoFlush`` : : giá trị **boolean** tùy chọn ``true`` hoặc ``false``, nếu ``true`` sẽ tự động **flush** khi **output stream** được ghi, hoặc 1 trong các phương thức **println()** được gọi, hoặc 1 ký tự cấp dòng ``\n`` được ghi vào stream <br/>``charset`` : **Charset** chỉ định để thực hiện **encoding** các ký tự vào stream
+public          |PrintStream(String fileName)                                      |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với đường dẫn **fileName** chỉ định, sử dụng **charset** mặc định, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự sử dụng **default charset** <br/>``fileName`` : đường dẫn đến **File** chỉ định 
+public          |PrintStream(String fileName, String csn)                          |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với đường dẫn **fileName** chỉ định, sử dụng **charset** chỉ định, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự sử dụng **charset** chỉ định <br/>``fileName`` : đường dẫn đến **File** chỉ định <br/>``csn`` : tên của **charset** chỉ định
+public          |PrintStream(String fileName, Charset charset)                     |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với đường dẫn **fileName** chỉ định, sử dụng **charset** chỉ định, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự sử dụng **charset** chỉ định <br/>``fileName`` : đường dẫn đến **File** chỉ định <br/>``charset`` : **Charset** chỉ định dùng để **encode**
+public          |PrintStream(File file)                                            |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với **File** chỉ định, sử dụng **charset** mặc định, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự <br/>``file`` : **File** mục tiêu chỉ định
+public          |PrintStream(File file, String csn)                                |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với **File** chỉ định, sử dụng **charset-name** chỉ định để **encoding**, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự <br/>``file`` : **File** mục tiêu chỉ định <br/>``csn`` : tên của **charset** chỉ định 
+public          |PrintStream(File file, Charset charset)                           |tạo 1 đối tượng **PrintStream**, không **autoFlush**, với **File** chỉ định, sử dụng **charset** chỉ định để **encoding**, constructor này tạo 1 **OutputStreamWriter** bên trong nó để **encode** các ký tự <br/>``file`` : **File** mục tiêu chỉ định <br/>``charrset`` : đối tượng **Charset** chỉ định 
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream Methods
+
+AccessModifier         |Return Data |Method                                          |Description
+:----------------------|:-----------|:-----------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------
+private                |void        |ensureOpen()                                    |
+private static \<T>    |T           |requireNonNull(T obj, String message)           |
+private static         |Charset     |toCharset(String csn)                           |
+-                      |-           |-                                               |-
+public                 |void        |flush()                                         |flush stream
+public                 |void        |close()                                         |close stream
+-                      |-           |-                                               |-
+public                 |boolean     |checkError()                                    |flush stream và kiểm tra trạng thái error của stream, trạng thái error nội bộ được đặt là ``true`` khi **output stream** bên trong ném ra 1 **IOException** và khi phương thức **setError()** được gọi trước đó <br/>nếu hoạt động trên **output stream** bên trong ném ra 1 **InterruptedIOException**, thì **PrintStream** chuyển đổi **exception** trở lại **interrupt** bằng lệnh ``Thread.currentThread().interrupt();`` hoặc các lệnh tương đương <br/>return ``true`` nếu và chỉ nếu stream này gặp **IOException** hoặc **setError()** đã được gọi trước đó, khác với **InterruptedIOException**  
+protected              |void        |setError()                                      |thiết lập trạng thái **error** của stream trở thành ``true``, phương thức này sẽ dẫn đến lệnh gọi **checkError()** tiếp theo trả về ``true`` cho đến khi **clearError()** được gọi <br/>phương thức này chỉ được sử dụng bởi **subclass** của **PrintStream**
+protected              |void        |clearError()                                    |xóa trạng thái lỗi nội bộ của stream này, phương thức này sẽ dẫn đến phương thức **checkError()** trả về ``false`` cho đến khi hoạt động ghi khác bị lỗi và gọi phương thức **setError()** <br/>phương thức này chỉ được sử dụng bởi **subclass** của **PrintStream**
+-                      |-           |-                                               |-
+public                 |void        |write(int b)                                    |ghi 1 **byte** chỉ định vào stream, nếu byte được ghi vào là 1 ký tự **newline`` và chức năng **auto flush** được bật thì phương thức **flush()** sẽ được gọi 
+public                 |void        |write(byte buf[], int off, int len)             |ghi 1 phần của mảng ký tự chỉ định ``buf`` từ vị trí ``off`` với số lượng ``len`` byte từ vị trí ``off``, nếu chức năng **auto flush** được bật thì phương thức **flush()** sẽ được gọi <br/>``buf`` : mảng ký tự chỉ định ghi vào stream <br/>``off`` : vị trí bắt đầu lấy ký tự ghi vào stream <br/>``len`` : số lượng ký tự lấy để ghi vào stream bắt đầu từ ``off`` 
+private                |void        |write(char buf[])                               |
+private                |void        |write(String s)                                 |
+private                |void        |newLine()                                       |
+-                      |-           |-                                               |-
+public                 |void        |print(boolean b)                                |in giá trị **boolean** ``b`` vào **output stream** bên trong
+public                 |void        |print(char c)                                   |in giá trị **char** ``c`` vào **output stream** bên trong
+public                 |void        |print(int i)                                    |in giá trị **int** ``i`` vào **output stream** bên trong
+public                 |void        |print(long l)                                   |in giá trị **long** ``l`` vào **output stream** bên trong
+public                 |void        |print(float f)                                  |in giá trị **float** ``f`` vào **output stream** bên trong
+public                 |void        |print(double d)                                 |in giá trị **double** ``d`` vào **output stream** bên trong
+public                 |void        |print(char s[])                                 |in giá trị **char[]** ``s`` vào **output stream** bên trong
+public                 |void        |print(String s)                                 |in giá trị **String** ``s`` vào **output stream** bên trong
+public                 |void        |print(Object obj)                               |in giá trị **Object** ``obj`` vào **output stream** bên trong
+-                      |-           |-                                               |-
+public                 |void        |println()                                       |in giá trị ``\n`` vào **output stream** bên trong
+public                 |void        |println(boolean x)                              |in giá trị **boolean** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(char x)                                 |in giá trị **char** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(int x)                                  |in giá trị **int** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(long x)                                 |in giá trị **long** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(float x)                                |in giá trị **float** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(double x)                               |in giá trị **double** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(char x[])                               |in giá trị **char[]** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(String x)                               |in giá trị **String** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+public                 |void        |println(Object x)                               |in giá trị **Object** ``x`` vào **output stream** bên trong, theo sau là ký tự ``\n``
+-                      |-           |-                                               |-
+public                 |PrintStream |printf(String format, Object ... args)          |trả về đối tượng **PrintStream** các đối số ``agrs`` được in vào **output stream** theo định dạng chỉ định ``format`` <br/>``format`` : chuỗi định dạng như mô tả trong **Format String syntax** <br/>``args`` : các đối số, nếu nhiều hơn 1 đối số, sẽ được cách nhau bởi dấu ``,``
+public                 |PrintStream |printf(Locale l, String format, Object ... args)|trả về đối tượng **PrintStream** các đối số ``agrs`` được in vào **output stream** theo định dạng chỉ định ``format`` <br/>``format`` : chuỗi định dạng như mô tả trong **Format String syntax** <br/>``args`` : các đối số, nếu nhiều hơn 1 đối số, sẽ được cách nhau bởi dấu ``,`` <br/>``l`` : **Locale** sử dụng trong quá trình **formatting**, nếu **l = null** thì không có **localization** được xác nhận
+-                      |-           |-                                               |-
+public                 |PrintStream |format(String format, Object ... args)          |trả về đối tượng **PrintStream** các đối số ``agrs`` được in vào **output stream** theo định dạng chỉ định ``format`` <br/>``format`` : chuỗi định dạng như mô tả trong **Format String syntax** <br/>``args`` : các đối số, nếu nhiều hơn 1 đối số, sẽ được cách nhau bởi dấu ``,``
+public                 |PrintStream |format(Locale l, String format, Object ... args)|trả về đối tượng **PrintStream** các đối số ``agrs`` được in vào **output stream** theo định dạng chỉ định ``format`` <br/>``format`` : chuỗi định dạng như mô tả trong **Format String syntax** <br/>``args`` : các đối số, nếu nhiều hơn 1 đối số, sẽ được cách nhau bởi dấu ``,`` <br/>``l`` : **Locale** sử dụng trong quá trình **formatting**, nếu **l = null** thì không có **localization** được xác nhận
+-                      |-           |-                                               |-
+public                 |PrintStream |append(CharSequence csq)                        |trả về **PrintStream** được nối thêm **CharSequence** chỉ định ``csq`` vào **output stream** này <br/>``csq`` : **CharSequence** chỉ định
+public                 |PrintStream |append(CharSequence csq, int start, int end)    |trả về **PrintStream** được nối thêm 1 phần **CharSequence** chỉ định ``csq`` vào **output stream** này <br/>``csq`` : **CharSequence** chỉ định <br/>``start`` : vị trí bắt đầu nối trong ``csq`` <br/>``end`` : vị trí kết thúc nối trong ``csq``
+public                 |PrintStream |append(char c)                                  |trả về **PrintStream** được nối thêm 1 ký tự ``c`` chỉ định vào **output stream** này <br/>``c`` : ký tự chỉ định
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream lấy chuỗi báo lỗi của **Stack Trace**
+* viết chương trình lấy nội dung báo lỗi của **Stack Trace** từ 1 **Exception**
+```java
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+public class PrintStream_getStackTrace {
+    public static void main(String[] args) {
+        try {
+            int a = 100 / 0;
+        } catch (Exception e) {
+            // e.printStackTrace(); là câu lệnh bình thường khi bắt exception
+//            e.printStackTrace();
+
+            String s = getStackTrace(e);
+            System.err.println(s);
+
+        }
+    }
+
+    private static String getStackTrace(Throwable throwable) {
+        OutputStream outputStream = new ByteArrayOutputStream();
+
+        PrintStream printStream = new PrintStream(outputStream);
+
+        throwable.printStackTrace(printStream);
+        printStream.close();
+
+        String s = outputStream.toString();
+
+        return s;
+    }
+}
+```
+* OUTPUT
+```text
+java.lang.ArithmeticException: / by zero
+	at _45_Java_IO._04_CharacterIO_Streams._19_PrintStream.PrintStream_getStackTrace.main(PrintStream_getStackTrace.java:10)
+
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream - phương thức checkError()
+* phương thức **checkError()** trả về trạng thái **error** của **PrintStream** này, đồng thời phương thức **flush()** cũng được gọi nếu **PrintStream** này chưa bị đóng
+* tất cả các phương thức của **PrintStream** không ném  ra **IOException**, nhưng 1 khi **IOException** xảy ra trong nội bộ các phương thức thì trạng thái lỗi của nó được xem là lỗi
+* trạng thái **error** của **PrintStream** này chỉ bị xóa nếu gọi phương thức **clearError()**, nhưng đây là 1 phương thức **protected**, muốn sử dụng phương thức này ta phải
+viết 1 lớp **extends PrintStream** và ghi đè (override) phương thức **clearError()**
+
+#### class MyPrintStream extends PrintStream
+```java
+import java.io.*;
+
+public class MyPrintStream extends PrintStream {
+    public MyPrintStream(File file) throws FileNotFoundException {
+        super(file);
+    }
+
+    @Override
+    public void clearError()  {
+        super.clearError();    // Call protected method.
+    }
+}
+```
+#### class chương trình
+```java
+import java.io.*;
+
+public class MyPrintStream_checkError {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_19_PrintStream\\testCheckError.txt";
+
+    public static void main(String[] args) throws Exception {
+        File logFile = new File(path);
+
+        MyPrintStream mps = new MyPrintStream(logFile);
+        int errorCount = 0;
+        while (true) {
+            // Write log..
+            mps.println("Some Log..");
+            System.out.println("Some Log..");
+            Thread.sleep(1000);
+
+            // Check if IOException happened.
+            if (mps.checkError()) {
+                errorCount++;
+                mps.clearError();
+                if (errorCount > 10) {
+                    sendAlertEmail();
+                    break;
+                }
+            }
+        }
+        mps.close();
+    }
+
+    private static void sendAlertEmail() {
+        System.out.println("There is a problem in the Log system.");
+    }
+}
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream.print()
+* phương thức **print()** dùng để in 1 giá trị nguyên thủy
+```java
+import java.io.PrintStream;
+
+public class PrintStream_print {
+    public static void main(String[] args) {
+        PrintStream printStream = new PrintStream(System.out);
+
+        String s = "abcd";
+        char[] c = s.toCharArray();
+        char c1 = 'C';
+        boolean b = true;
+        int i = 100;
+
+        printStream.println(i);
+        printStream.println(b);
+        printStream.println(c1);
+        printStream.println(c);
+        printStream.println(s);
+
+        printStream.close();
+    }
+}
+```
+* OUTPUT
+```text
+100
+true
+C
+abcd
+abcd
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+### PrintStream print(Object)
+* chuyển 1 đối tượng thành 1 **String** bằng phương thức **String.valueOf(Object)**, và in ra kết quả
+```java
+public void print(Object obj) {
+    this.write(String.valueOf(obj));    
+}
+```
+```java
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Arrays;
+
+public class StudentPrintStream {
+    private int id;
+    private String name;
+
+    public StudentPrintStream(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "StudentPrintStream{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public static void main(String[] args) {
+        StudentPrintStream studentPrintStream = new StudentPrintStream(10, "Jack");
+
+        PrintStream printStream = new PrintStream(System.out);
+
+        printStream.println(studentPrintStream);
+
+        Socket socket = new Socket();
+        Object object1 = Arrays.asList("One", "Two", "Three");
+        Object object2 = null;
+
+        printStream.println(socket);
+        printStream.println(object1);
+        printStream.println(object2);
+
+        printStream.close();
+    }
+}
+```
+* OUTPUT
+```text
+StudentPrintStream{id=10, name='Jack'}
+Socket[unconnected]
+[One, Two, Three]
+null
+```
 __________________________________________________________________________________________________________________________________________________________________________________
 
+## 20. StreamTokenizer <a id="20"></a>
+* class **java.io.StreamTokenizer** nhận 1 **input stream** **(để đọc)** và phân giải **(parse)** nó thành các **token**, cho phép đọc mỗi lần từng **token** một
+* **StreamTokenizer** có thể nhận dạng **identifiers, numbers, quoted strings, và các kiểu comment khác nhau**
+```java
+public class StreamTokenizer {
+    
+}
+```
+### StreamTokenizer Fields có thể sử dụng
+```java
+public class StreamTokenizer {
+  public int ttype = TT_NOTHING;
+  public static final int TT_EOF = -1;
+  public static final int TT_EOL = '\n';
+  public static final int TT_NUMBER = -2;
+  public static final int TT_WORD = -3;
+
+  public String sval;
+  public double nval;
+}
+```
+
+AccessModifier      |ReturnData |NameVariable |DefaultValue |Description
+:-------------------|:----------|:------------|:------------|:----------------------------------------------------------------------------------------------------------------------------------------
+public              |int        |ttype        |= TT_NOTHING;|**ttype** (token type), sau khi phương thức **nextToken()** được gọi để đọc **token** kế tiếp thì field này sẽ chứa **type of token** kế tiêp vừa được đọc đó
+public static final |int        |TT_EOF       |= -1;        |1 **constant** (hằng số) chỉ ra rằng đã đọc đến cuối stream **EOF** (end of file)
+public static final |int        |TT_EOL       |= '\n';      |1 **constant** (hằng số) chỉ ra rằng đã đọc đến cuối dòng văn bản **EOL** (end of line)
+public static final |int        |TT_NUMBER    |= -2;        |1 **constant** (hằng số) chỉ ra rằng đã đọc được 1 **number token** 
+public static final |int        |TT_WORD      |= -3;        |1 **constant** (hằng số) chỉ ra rằng đã đọc được 1 **word token**
+-                   |-          |-            |-            |-
+public              |String     |sval;        |             |nếu **token** hiện tại là **word token** - **(ttype = TT_WORD)**, field **sval** (string value) sẽ chứa 1 **String** cung cấp các ký tự của **word token** đó  
+public              |double     |nval;        |             |nếu **token** hiện tại là **number** - **(ttype = TT_NUMBER)**, field **nval** (number value) sẽ chứa giá trị của **number** đó 
+__________________________________________________________________________________________________________________________________________________________________________________
+### StreamTokenizer Constructors
+```java
+public class StreamTokenizer {
+  public StreamTokenizer(InputStream is) {//...}
+  public StreamTokenizer(Reader r) {//...}
+}
+```
+
+Constructor                     |Description
+:-------------------------------|:-----------------------------------------------------------------------------------------------------------------------
+StreamTokenizer(InputStream is) |tạo 1 **StreamTokenizer** để **parse** (phân giải) 1 **InputStream** (binary-input-stream) chỉ định <br/>``is`` : **InputStream** chỉ định
+StreamTokenizer(Reader r)       |tạo 1 **StreamTokenizer** để **parse** (phân giải) 1 **Reader** (character-input-stream) chỉ định <br/>``r`` : **Reader** chỉ định
+
+__________________________________________________________________________________________________________________________________________________________________________________
+### StreamTokenizer Methods
+```java
+public class StreamTokenizer {
+  public void resetSyntax() {//...}
+  public void wordChars(int low, int hi) {//...}
+  public void whitespaceChars(int low, int hi) {//...}
+  public void ordinaryChars(int low, int hi) {//...}
+  public void ordinaryChar(int ch) {//...}
+  public void commentChar(int ch) {//...}
+  public void quoteChar(int ch) {//...}
+  public void parseNumbers() {//...}
+  public void eolIsSignificant(boolean flag) {//...}
+  public void slashStarComments(boolean flag) {//...}
+  public void slashSlashComments(boolean flag) {//...}
+  public void lowerCaseMode(boolean fl) {//...}
+  public int nextToken() throws IOException {//...}
+  public void pushBack() {//...}
+  public int lineno() {//...}
+  public String toString() {//...}
+}
+```
+
+AccessModifier  |Return Data  |Method                            |Description
+:---------------|:------------|:---------------------------------|:------------------------------------------------------------------------------------------------------------------------
+public          |void         |resetSyntax()                     |phương thức này đặt lại bảng cú pháp của StreamTokenizer này để tất cả các ký tự là bình thường trong **StreamTokenizer** này, xem phương thức **normalChar()** để biết thông tin về những ký tự là bình thường
+public          |void         |wordChars(int low, int hi)        |phương thức này thiết lập tất cả các ký tự chỉ định trong phạm vi [low : hi] đều là thành phần từ trong **StreamTokenizer** này, 1 **word token** gồm 1 thành phần từ và theo sau nó có thể là 0 hoặc nhiều thành phần từ hoặc thành phần số <br/>``low`` : ký tự giới hạn dưới được xem như là thành phần từ <br/>``hi`` : ký tự giới hạn trên được xem như là thành phần từ 
+public          |void         |whitespaceChars(int low, int hi)  |phương thức này thiết lập tất cả các ký tự chỉ định trong phạm vi [low : hi] đều là ký tự khoảng trắng trong **StreamTokenizer** này, ký tự khoảng trắng trong **StreamTokenizer** dùng để phân cách các **token** được phân giải từ **input stream**, khi phương thức này được gọi, thì mọi thuộc tính khác có liên quan đến những ký tự trong phạm vi ký tự của phương thức này được thiết lập trước đó đều bị xóa <br/>``low`` : ký tự giới hạn dưới đươc xem như là 1 ký tự khoảng trắng <br/>``hi`` : ký tự giới hạn trên được xem như là 1 ký tự khoảng trắng
+public          |void         |ordinaryChars(int low, int hi)    |phương thức này thiết lập tất cả các ký tự chỉ định trong phạm vi [low : hi] đều là ký tự **ordinary** (bình thường) trong **StreamTokenizer** này, xem phương thức **ordinaryChar()** để có nhiều thông tin hơn như thế nào là 1 ký tự bình thường <br/>``low`` : ký tự giới hạn dưới được xem như là ký tự bình thường <br/>``hi`` : ký tự giới hạn trên được xem như là ký tự bình thường
+public          |void         |ordinaryChar(int ch)              |phương thức này thiết lập ký tự chỉ định là 1 ký tự **ordinary** (bình thường), phương thức này loại bỏ tất cả các chỉ định cho ký tự này trước đó như **1 comment character, 1 word component, 1 string delimiter, 1 white space hoặc 1 number character**, khi bộ phân giải gặp ký tự mà **ordinaryChar(char)** chỉ định, nó sẽ xem ký tự đó như **1 single character token** và thiết lập **ttype = (character value)** <br/>việc thiết lập ký tự kết thúc dòng có thể ảnh hưởng đến khả năng đếm dòng của **StreamTokenizer** này, phương thức **lineno()** không còn phản ánh sự hiện diện của những ký tự kết thúc như vậy trong số dòng của nó <br/>``ch`` : ký tự chỉ định là 1 ký tự bình thường 
+public          |void         |commentChar(int ch)               |phương thức này thiết lập ký tự chỉ định là 1 ký tự **comment** (nhận xét) dùng để bắt đầu **1 single line comment**, bắt đầu từ ký tự chỉ định này đến ký tự kết thúc dòng sẽ được coi là 1 comment và bị **StreamTokenizer** này bỏ qua <br/>mọi thiết lập thuộc tính khác trước đó của ký tự này đều bị xóa bỏ <br/>``ch`` : ký tự chỉ định là bắt đầu dòng **comment** 
+public          |void         |quoteChar(int ch)                 |phương thức này thiết lập các cặp khớp với ký tự chỉ định phân tách hằng số chuỗi trong **StreamTokenizer** này là **quote character** (ký tự trích dẫn) <br/>khi phương thức **nextToken()** gặp 1 hằng số chuỗi, **ttype** field được đặt thành dấu phân cách, **sval** field được đặt thành thân của hằng số chuỗi <br/>nếu gặp phải **1 quote character**, thì chuỗi sẽ được nhận dạng, là những ký tự sau ký tự trích dẫn đầu tiên (không bao gồm ký tự trích dẫn) cho đến những ký tự trước ký tự trích dẫn tiếp theo (không bao gồm ký tự trích dẫn) hoặc ký tự kết thúc dòng hoặc ký tự kết thúc file <br/>các ký tự chuỗi thoát thông thường như ``\n``, ``\t`` được nhận dạng và chuyển đổi thành các **ordinaryChar** trong quá trình phân giải cú pháp <br/>mọi thiết lập thuộc tính khác cho ký tự chỉ định trước đó đều bị xóa <br/>``ch`` : ký tự chỉ định là ký tự trích dẫn **(quote character)**  
+public          |void         |parseNumbers()                    |phương thức này chỉ định các số nên được phân giải bởi **StreamTokenizer** này, **syntax table** này của **StreamTokenizer** được modify sao cho mỗi ký tự trong số 12 ký tự ``0``, ``1``, ``2``, ``3``, ``4``, ``5``, ``6``, ``7``, ``8``, ``9``, ``0``, ``.``, ``-`` có thuộc tính **numeric**
+public          |void         |eolIsSignificant(boolean flag)    |phương thức này chỉ định ký tự kết thúc dòng là **token** hay là không(có quan trọng hay không - eolIsSignificant - end of line is significant), nếu ``flag = true`` thì **StreamTokenizer** này xem ký tự EOL như là 1 **token**, phương thức **nextToken()** trả về **TT_EOL** đồng thời thiết lập **ttype = TT_EOL** khi ký tự kết thúc dòng được đọc <br/>1 dòng là 1 chuỗi các ký tự được kết thúc bằng ký tự **newline** (``\n``) hoặc ký tự **carriage-return** (``\r``), ngoài ra ký tự ``\r`` theo sau ký tự ``\n`` sẽ được coi là ` **token end of line** duy nhất <br/>nếu ``flag = false`` thì ký tự end of line chỉ được coi là các whitespace và chỉ dùng để phân cách các **token** 
+public          |void         |slashStarComments(boolean flag)   |phương thức này chỉ định **StreamTokenizer** này nhận dạng kiểu comment của C language hay là không (slash star star slash - /* */) <br/>nếu ``flag = true`` thì tất cả văn bản nằm giữa cặp ``/* */`` đều bị bỏ qua <br/>nếu ``flag = false`` thì cặp ``/* */`` và các văn bản nằm giữa chúng không được xem như là comment kiểu C language
+public          |void         |slashSlashComments(boolean flag)  |phương thức này chỉ định **StreamTokenizer** này nhận dạng kiểu comment của C++ language hay là không (slash slash - //)  <br/>nếu ``flag = true`` thì tất cả văn bản nằm sau cặp ký tự **slash slash - //** đều bị bỏ qua <br/>nếu ``flag = false`` thì cặp ký tự **slash slash //** và các văn bản nằm sau chúng không được xem như là comment kiểu C++ language 
+public          |void         |lowerCaseMode(boolean fl)         |phương thức này chỉ định **StreamTokenizer** này tự động sửa đổi các **TT_WORD** hoàn toàn trở thành **lower case mode** hay là không <br/>nếu ``fl = true`` thì **sval** field sẽ sửa đổi thành **lower case mode** bất cứ khi nào **TT_WORD** được trả về bởi **nextToken()** <br/>nếu ``fl = false`` thì **sval** field sẽ không có bất kỳ sửa đổi nào hết
+public          |int          |nextToken()                       |phương thức này phân giải **token** tiếp theo từ **input stream** của **StreamTokenizer** này <br/>kiểu của **token** sẽ được trả về cho **ttype** field <br/>thông tin bổ sung của **token** có thể ở **sval** hoặc **nval** field <br/>các **typical client** (ứng dụng điển hình) của lớp này trước tiên sẽ thiết lập **1 syntax table** và đặt ở trong vòng lặp gọi đến **nextToken()** để phân giải các **token** tiếp theo, cho đến khi **TT_EOF** được trả về thì dừng vòng lắp
+public          |void         |pushBack()                        |phương thức này làm cho lệnh gọi tiếp theo đến **nextToken()** của **StreamTokenizer** này trả về giá trị hiện tại ở **ttype** field (push back - đẩy ngược lại token trước), và không sửa đổi giá trị ở **sval** hoặc **nval** field <br/>phương thức này sẽ không hoạt động nếu **nextToken()** chưa được gọi trước đó
+public          |int          |lineno()                          |phương thức này trả về số của dòng hiện tại
+public          |String       |toString()                        |phương thức này trả về 1 biểu diễn **String** của **token** trong **StreamTokenizer** hiện tại và số thứ tự của dòng mà nó xuất hiện trên đó
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with resetSyntax()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_resetSyntax {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_resetSyntax.txt";
+
+    public static void main(String[] args) throws IOException {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        // when a number is met, reset syntax
+                        streamTokenizer.resetSyntax();
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
+  encountered.
++ encountered.
+  encountered.
+1 encountered.
+  encountered.
+= encountered.
+  encountered.
+2 encountered.
+End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with wordChars(int low, int hi)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_wordChars {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_wordChars.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập phạm vi được xem là ký tự từ trong phạm vi [o - t]
+            streamTokenizer.wordChars('o', 't'); // o p q r s t
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with whitespaceChars(int low, int hi)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_whitespaceChars {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_whitespaceChars.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập phạm vi được xem là ký tự khoảng trắng trong phạm vi [o - t]
+            streamTokenizer.whitespaceChars('o', 't'); // o p q r s t
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHell
+Number: 0.0
+Word: Thi
+Word: i
+Word: a
+Word: ex
+Word: ha
+Word: will
+Word: be
+Word: li
+Word: in
+Word: ken
+Number: 0.0
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with ordinaryChars(int low, int hi)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_ordinaryChars {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_ordinaryChars.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập phạm vi được xem là ký tự bình thường (ordinary) trong phạm vi [a - e]
+            streamTokenizer.ordinaryChars('a', 'e'); // a b c d e
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AH
+e encountered.
+Word: llo.
+Word: This
+Word: is
+a encountered.
+Word: t
+e encountered.
+Word: xt
+Word: th
+a encountered.
+Word: t
+Word: will
+b encountered.
+e encountered.
+Word: split
+Word: into
+Word: tok
+e encountered.
+Word: ns.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with ordinaryChar(int ch)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_ordinaryChar {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_ordinaryChar.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập ký tự \n được coi như là 1 ký tự bình thường
+            streamTokenizer.ordinaryChar('\n');
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+End of Line encountered.
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with commentChar(int ch)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_commentChar {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_commentChar.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập ký tự 'a' được coi như là 1 ký tự bắt đầu dòng comment đơn
+            streamTokenizer.commentChar('a');
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: th
+End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with quoteChar(int ch)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_quoteChar {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_quoteChar.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập ký tự 'a' được coi như là 1 ký tự trích dẫn
+            streamTokenizer.quoteChar('o');
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHell
+o encountered.
+Word: that
+Word: will
+Word: be
+Word: split
+Word: int
+o encountered.
+Word: kens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with parseNumbers()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_parseNumbers {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_parseNumbers.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập ký tự 'a' được coi như là 1 ký tự trích dẫn
+            streamTokenizer.parseNumbers();
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with eolIsSignificant(boolean flag)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_eolIsSignificant {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_quoteChar.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập ký tự end of line is significant và được coi như là 1 token
+            streamTokenizer.eolIsSignificant(true);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+End of Line encountered.
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with slashStarComments(boolean flag)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_slashStarComments {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_slashStarComments.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. /* This is a text */\n that will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập comment kiểu C language
+            streamTokenizer.slashStarComments(true);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: FHello.
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with slashSlashComments(boolean flag)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_slashSlashComments {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_slashSlashComments.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that //will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập comment kiểu C++ language
+            streamTokenizer.slashSlashComments(true);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: CHello.
+Word: This
+Word: is
+Word: a
+Word: text
+Word: that
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with lowerCaseMode(boolean fl)
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_lowerCaseMode {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_lowerCaseMode.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+        // o. This is a text \n -> đoạn trích dẫn là (This is a text)
+        // o to -> đoạn trích dẫn là (t)
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // thiết lập automatic lower case mode cho TT_WORD được trả về bởi nextToken()
+            streamTokenizer.lowerCaseMode(true);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: ahello.
+Word: this
+Word: is
+Word: a
+Word: text
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with nextToken()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_nextToken {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_nextToken.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with pushBack()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_pushBack {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_pushBack.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+
+                // đã gọi nextToken() trên, dùng pushBack() để đẩy trở lại token đó lần nữa
+                streamTokenizer.pushBack();
+                token = streamTokenizer.nextToken(); // lại gọi nextToken() để lấy token
+
+                // lặp lại switch
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: AHello.
+Word: AHello.
+Word: This
+Word: This
+Word: is
+Word: is
+Word: a
+Word: a
+Word: text
+Word: text
+Word: that
+Word: that
+Word: will
+Word: will
+Word: be
+Word: be
+Word: split
+Word: split
+Word: into
+Word: into
+Word: tokens.
+Word: tokens.
+Number: 1.0
+Number: 1.0
++ encountered.
++ encountered.
+Number: 1.0
+Number: 1.0
+= encountered.
+= encountered.
+Number: 2.0
+Number: 2.0
+End of File encountered.
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with lineno()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_lineno {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_lineno.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            // số thứ tự của dòng hiện tại
+            System.out.println("Line Number: " + streamTokenizer.lineno());
+
+            // thiết lập nhận dạng ký tự kết thúc dòng
+            streamTokenizer.eolIsSignificant(true);
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("End of Line encountered.");
+                        System.out.println("Line Number: " + streamTokenizer.lineno());
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer.sval);
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer.nval);
+                        break;
+
+                    default:
+                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Line Number: 1
+Word: AHello.
+Word: This
+Word: is
+Word: a
+Word: text
+End of Line encountered.
+Line Number: 2
+Word: that
+Word: will
+Word: be
+Word: split
+Word: into
+Word: tokens.
+Number: 1.0
++ encountered.
+Number: 1.0
+= encountered.
+Number: 2.0
+End of File encountered.
+```
+__________________________________________________________________________________________________________________________________________________________________________________
+#### StreamTokenizer with toString()
+```java
+
+import java.io.*;
+
+public class StreamTokenizer_toString {
+    private static final String path = "D:\\Learning\\Java\\JavaOOP\\src\\_45_Java_IO\\_04_CharacterIO_Streams\\_20_StreamTokenizer\\test_toString.txt";
+
+    public static void main(String[] args) {
+        String text = "Hello. This is a text \n that will be split " + "into tokens. 1 + 1 = 2";
+
+        try {
+            // ghi file
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeUTF(text);
+            objectOutputStream.flush();
+
+            // đọc file vừa tạo, sử dụng StreamTokenizer để phân giải nội dung file thành các token
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
+            Reader reader = new BufferedReader(new InputStreamReader(objectInputStream));
+
+            StreamTokenizer streamTokenizer = new StreamTokenizer(reader);
+
+            // biến điều kiện kết thúc quá trình đọc
+            boolean eof = false; // end of file
+
+            // thiết lập nhận dạng ký tự kết thúc dòng
+            streamTokenizer.eolIsSignificant(true);
+
+            do {
+                int token = streamTokenizer.nextToken();
+
+                switch (token) {
+                    case StreamTokenizer.TT_EOF:
+                        System.out.println("EOF: " + streamTokenizer + " End of File encountered.");
+//                        System.out.println("EOF: " + streamTokenizer.toString() + " End of File encountered.");
+                        eof = true;
+                        break;
+
+                    case StreamTokenizer.TT_EOL:
+                        System.out.println("EOL: " + streamTokenizer + " End of Line encountered.");
+
+//                        System.out.println("EOL: " + streamTokenizer.toString() + " End of Line encountered.");
+                        break;
+
+                    case StreamTokenizer.TT_WORD:
+                        System.out.println("Word: " + streamTokenizer);
+                        // System.out.println("Word: " + streamTokenizer.toString());
+                        break;
+
+                    case StreamTokenizer.TT_NUMBER:
+                        System.out.println("Number: " + streamTokenizer);
+                        // System.out.println("Number: " + streamTokenizer.toString);
+                        break;
+
+                    default:
+                        System.out.println("char: " + streamTokenizer);
+//                        System.out.println("char: " + streamTokenizer.toString());
+//                        System.out.println((char) token + " encountered."); // in những token != TT_NUMBER && token != TT_WORD
+                        // gặp '!' cũng coi như là end of file
+                        if (token == '!') {
+                            eof = true;
+                        }
+                }
+            } while (!eof); // eof = true -> while(false) -> kết thúc
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+* OUTPUT
+```text
+Word: Token[AHello.], line 1
+Word: Token[This], line 1
+Word: Token[is], line 1
+Word: Token[a], line 1
+Word: Token[text], line 1
+EOL: Token[EOL], line 2 End of Line encountered.
+Word: Token[that], line 2
+Word: Token[will], line 2
+Word: Token[be], line 2
+Word: Token[split], line 2
+Word: Token[into], line 2
+Word: Token[tokens.], line 2
+Number: Token[n=1.0], line 2
+char: Token['+'], line 2
+Number: Token[n=1.0], line 2
+char: Token['='], line 2
+Number: Token[n=2.0], line 2
+EOF: Token[EOF], line 2 End of File encountered.
+```
+
+__________________________________________________________________________________________________________________________________________________________________________________
